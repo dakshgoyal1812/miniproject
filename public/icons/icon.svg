@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#101828"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="cross" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <!-- Medical Plus Cross -->
+  <g filter="url(#shadow)">
+    <rect x="216" y="116" width="80" height="280" rx="40" fill="url(#cross)"/>
+    <rect x="116" y="216" width="280" height="80" rx="40" fill="url(#cross)"/>
+  </g>
+  <!-- Queue Spark Pulse -->
+  <circle cx="370" cy="142" r="26" fill="#38bdf8"/>
+  <circle cx="370" cy="142" r="38" fill="none" stroke="#38bdf8" stroke-width="6" opacity="0.5"/>
+</svg>
