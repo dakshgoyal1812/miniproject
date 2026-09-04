@@ -2,10 +2,11 @@
   "name": "smat-queue",
   "version": "1.0.0",
   "description": "SmartQueue - AI-Powered Hospital Appointment and Patient Queue Management",
+  "main": "server.js",
   "type": "commonjs",
   "scripts": {
-    "start": "node dev-server.js",
-    "dev": "node --watch dev-server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
   "keywords": [
     "smartqueue",
