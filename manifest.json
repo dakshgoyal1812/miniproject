@@ -1,0 +1,48 @@
+{
+  "name": "SmartQueue - Hospital OPD & Appointments",
+  "short_name": "SmartQueue",
+  "description": "AI-Powered Hospital Appointment and Patient Live Queue Management System",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#101828",
+  "orientation": "any",
+  "categories": ["medical", "health", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Book Appointment",
+      "short_name": "Book Now",
+      "description": "Book a doctor consultation and get live queue token",
+      "url": "/#screen1",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Track Token",
+      "short_name": "Track Queue",
+      "description": "Check current token and estimated wait time",
+      "url": "/#screen5",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}

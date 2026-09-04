@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" name="viewport"/>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' * data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https:; style-src 'self' 'unsafe-inline' https:; font-src 'self' https: data:; img-src 'self' data: https: blob:; connect-src 'self' https:;"/>
   <title>SmartQueue – Patient Appointment & Live Queue</title>
+
+  <!-- PWA Meta Tags, Icons & Manifest -->
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#101828"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="SmartQueue"/>
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png"/>
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png"/>
 
   <!-- Tailwind CSS CDN with forms and container queries plugin -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -196,6 +206,55 @@
       transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease;
     }
     #medi-chat-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+    /* Mobile, Tablet & Touch Responsiveness */
+    @media (max-width: 640px) {
+      #medi-chat-btn {
+        bottom: 18px;
+        right: 18px;
+        width: 50px;
+        height: 50px;
+      }
+      #medi-chat-panel {
+        bottom: 0 !important;
+        right: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 90vh !important;
+        max-height: 90vh !important;
+        border-radius: 24px 24px 0 0 !important;
+        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.22) !important;
+      }
+      #medi-chat-messages {
+        max-height: calc(90vh - 160px) !important;
+      }
+    }
+
+    @media (min-width: 641px) and (max-width: 1024px) {
+      #medi-chat-panel {
+        width: 380px;
+        max-height: 580px;
+        bottom: 84px;
+        right: 20px;
+      }
+    }
+
+    /* Mobile Scalloped Card & Thermal Ticket Scaling */
+    @media (max-width: 640px) {
+      .scalloped-mask {
+        clip-path: none !important;
+        -webkit-clip-path: none !important;
+        border-radius: 20px;
+        overflow: hidden;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .wrapper {
+        transform: scale(0.88);
+        transform-origin: top center;
+      }
+    }
 
     /* Mic button inside chat input */
     #medi-chat-mic {
@@ -594,18 +653,18 @@
         <span class="font-bold text-base sm:text-lg text-[#101828] tracking-tight">SmartQueue</span>
       </a>
 
-      <!-- Step Indicator Navigation -->
-      <nav class="flex items-center gap-1 bg-[#F2F4F7] p-1 rounded-full border border-[#E4E7EC] text-xs font-medium text-[#475467]">
-        <button id="ns0" onclick="goToScreen(0)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">🏠 Home</button>
-        <button id="ns1" onclick="goToScreen(1)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">1. Intake</button>
-        <button id="ns2" onclick="goToScreen(2)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">2. Hospital</button>
-        <button id="ns3" onclick="goToScreen(3)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">3. Doctor</button>
-        <button id="ns4" onclick="goToScreen(4)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">4. Slot</button>
-        <button id="ns5" onclick="goToScreen(5)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">📋 Tokens</button>
+      <!-- Step Indicator Navigation (Mobile Horizontal Scrollable) -->
+      <nav class="flex items-center gap-1 bg-[#F2F4F7] p-1 rounded-full border border-[#E4E7EC] text-xs font-medium text-[#475467] overflow-x-auto max-w-[210px] sm:max-w-none scrollbar-none">
+        <button id="ns0" onclick="goToScreen(0)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">🏠 Home</button>
+        <button id="ns1" onclick="goToScreen(1)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">1. Intake</button>
+        <button id="ns2" onclick="goToScreen(2)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">2. Hospital</button>
+        <button id="ns3" onclick="goToScreen(3)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">3. Doctor</button>
+        <button id="ns4" onclick="goToScreen(4)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">4. Slot</button>
+        <button id="ns5" onclick="goToScreen(5)" class="px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0">📋 Tokens</button>
       </nav>
 
       <!-- Quick Action / Status -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 sm:gap-3">
         <div id="navPatientBadge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-[#D0D5DD] text-xs font-semibold text-slate-800">
           <span class="w-2 h-2 rounded-full bg-blue-600"></span>
           <span id="navPatientName">Patient</span>
@@ -628,14 +687,14 @@
         
         <!-- Brand Logo -->
         <a href="#" onclick="goToScreen(0); return false;" class="inline-flex items-center gap-3 group">
-          <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white shadow-md shadow-slate-950/20 transition-transform group-hover:scale-105">
+          <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white shadow-md shadow-slate-950/20 transition-transform group-hover:scale-105 shrink-0">
             <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
             </svg>
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <span class="font-extrabold text-xl text-slate-900 tracking-tight">SmartQueue</span>
+              <span class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">SmartQueue</span>
               <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">OPD Live</span>
             </div>
             <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Digital Hospital & Clinic Queue System</p>
@@ -652,18 +711,52 @@
         </nav>
 
         <!-- Header Actions -->
-        <div class="flex items-center gap-2.5 sm:gap-3.5">
-          <button type="button" onclick="goToScreen(5)" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-2">
-            <svg class="w-4 h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <div class="flex items-center gap-2 sm:gap-3">
+          
+          <!-- PWA Install App Button (Visible when PWA install is ready) -->
+          <button id="pwaHeaderInstallBtn" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install App</span>
+          </button>
+
+          <button type="button" onclick="goToScreen(5)" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-1.5 sm:gap-2">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span class="hidden sm:inline">Track</span> <span>Tokens</span>
           </button>
 
-          <button type="button" onclick="goToScreen(1)" class="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md shadow-slate-950/20 hover:shadow-lg transition-all flex items-center gap-2 group">
-            <span>Book Appointment</span>
-            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <button type="button" onclick="goToScreen(1)" class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md shadow-slate-950/20 hover:shadow-lg transition-all flex items-center gap-1.5 sm:gap-2 group">
+            <span class="hidden sm:inline">Book Appointment</span>
+            <span class="sm:hidden">Book Now</span>
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+
+          <!-- Mobile Hamburger Menu Button (Phone & Tablet) -->
+          <button id="mobileMenuToggleBtn" type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none" aria-label="Toggle navigation menu">
+            <svg id="hamburgerIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         </div>
 
+      </div>
+
+      <!-- Mobile & Tablet Dropdown Navigation Menu -->
+      <div id="mobileMenuDropdown" class="hidden lg:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 py-4 space-y-3 transition-all">
+        <div class="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700">
+          <a href="#how-it-works" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">How It Works</a>
+          <a href="#features-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Features</a>
+          <a href="#hospitals-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Hospitals</a>
+          <a href="#doctors-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Specialists</a>
+          <a href="#faq-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">FAQ</a>
+        </div>
+        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <button id="pwaMobileMenuInstallBtn" type="button" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install SmartQueue App</span>
+          </button>
+          <button onclick="goToScreen(1); toggleMobileMenu(false);" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-950 hover:bg-slate-800 flex items-center justify-center gap-2 shadow-sm">
+            <span>Book Appointment &amp; Get Token</span>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -1667,7 +1760,7 @@
       </svg>
 
       <!-- Right Visual Hero Card with Scalloped Shape Mask -->
-      <div class="w-full lg:w-[52%] scalloped-wrap flex min-h-[540px] lg:min-h-full">
+      <div class="w-full lg:w-[52%] scalloped-wrap flex min-h-[400px] sm:min-h-[520px] lg:min-h-full">
         <section class="w-full relative scalloped-mask bg-[#1E293B] flex flex-col justify-end p-6 sm:p-8 lg:p-10" data-purpose="visual-hero-showcase">
           
           <!-- Background Image of Modern Healthcare / Consultation (Image 2) -->
@@ -2044,6 +2137,35 @@
   </div>
 
 
+  <!-- PROGRESSIVE WEB APP (PWA) INSTALL TOAST BANNER -->
+  <div id="pwaInstallBanner" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-4 shadow-2xl text-white transition-all transform duration-300">
+    <div class="flex items-center gap-3.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-lg shrink-0 shadow-md shadow-emerald-500/30">
+        SQ
+      </div>
+      <div class="flex-1 min-w-0">
+        <h4 class="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+          <span>Install SmartQueue</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">PWA</span>
+        </h4>
+        <p class="text-xs text-slate-300 mt-0.5 leading-snug">Fast access, live token alerts, and works offline on your phone or desktop.</p>
+      </div>
+      <button id="pwaDismissBannerBtn" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition-colors" aria-label="Dismiss install banner">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="mt-3 flex items-center gap-2 pt-2 border-t border-slate-800">
+      <button id="pwaBannerInstallBtn" class="flex-1 py-2 px-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-md shadow-emerald-500/25 flex items-center justify-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Install App</span>
+      </button>
+      <button id="pwaLaterBannerBtn" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
+        Not Now
+      </button>
+    </div>
+  </div>
+
+
   <!-- APPLICATION JAVASCRIPT LOGIC -->
   <script>
     // ══════════════════════════════════════════════════════════════
@@ -2173,9 +2295,9 @@
         const navBtn = document.getElementById('ns' + i);
         if (navBtn) {
           if (i === n) {
-            navBtn.className = "px-3.5 py-1.5 rounded-full transition-all bg-white text-[#101828] shadow-xs font-semibold";
+            navBtn.className = "px-2.5 sm:px-3 py-1 rounded-full transition-all bg-white text-[#101828] shadow-xs font-semibold shrink-0";
           } else {
-            navBtn.className = "px-3.5 py-1.5 rounded-full transition-all hover:text-[#101828]";
+            navBtn.className = "px-2.5 sm:px-3 py-1 rounded-full transition-all hover:text-[#101828] shrink-0";
           }
         }
       }
@@ -3052,6 +3174,115 @@ Be concise, warm and helpful. Support Hindi or English.`;
       document.getElementById('lname')?.addEventListener('input', syncPatientUI);
       syncPatientUI();
     })();
+
+    // ==========================================
+    // MOBILE NAVIGATION DRAWER TOGGLE
+    // ==========================================
+    function toggleMobileMenu(forceState) {
+      const menu = document.getElementById('mobileMenuDropdown');
+      const hamburger = document.getElementById('hamburgerIcon');
+      const close = document.getElementById('closeIcon');
+      if (!menu) return;
+
+      const isCurrentlyHidden = menu.classList.contains('hidden');
+      const shouldShow = typeof forceState === 'boolean' ? forceState : isCurrentlyHidden;
+
+      if (shouldShow) {
+        menu.classList.remove('hidden');
+        hamburger?.classList.add('hidden');
+        close?.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        hamburger?.classList.remove('hidden');
+        close?.classList.add('hidden');
+      }
+    }
+    window.toggleMobileMenu = toggleMobileMenu;
+
+    // ==========================================
+    // PROGRESSIVE WEB APP (PWA) LOGIC & SW
+    // ==========================================
+    let deferredPrompt = null;
+    const pwaHeaderBtn = document.getElementById('pwaHeaderInstallBtn');
+    const pwaMobileBtn = document.getElementById('pwaMobileMenuInstallBtn');
+    const pwaBanner = document.getElementById('pwaInstallBanner');
+    const pwaBannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
+    const pwaDismissBannerBtn = document.getElementById('pwaDismissBannerBtn');
+    const pwaLaterBannerBtn = document.getElementById('pwaLaterBannerBtn');
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => {
+            console.log('✅ SmartQueue ServiceWorker registered with scope:', reg.scope);
+          })
+          .catch((err) => {
+            console.log('⚠️ ServiceWorker note:', err.message);
+          });
+      });
+    }
+
+    // Capture beforeinstallprompt for custom install UX
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Reveal install buttons in header and mobile drawer
+      if (pwaHeaderBtn) pwaHeaderBtn.classList.remove('hidden');
+      if (pwaMobileBtn) pwaMobileBtn.classList.remove('hidden');
+
+      // Show floating prompt banner if not dismissed in last 24 hours
+      const lastDismissed = localStorage.getItem('sq_pwa_dismissed');
+      const now = Date.now();
+      if (!lastDismissed || (now - parseInt(lastDismissed, 10)) > 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+          if (deferredPrompt && pwaBanner) {
+            pwaBanner.classList.remove('hidden');
+          }
+        }, 2200);
+      }
+    });
+
+    async function triggerPwaInstall() {
+      if (!deferredPrompt) {
+        alert("To install SmartQueue on your device:\n\n• iOS (Safari): Tap the Share button and select 'Add to Home Screen'.\n• Android / Desktop: Tap the Install icon in your browser address bar.");
+        return;
+      }
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`PWA install prompt choice: ${outcome}`);
+      deferredPrompt = null;
+      if (pwaBanner) pwaBanner.classList.add('hidden');
+      if (pwaHeaderBtn) pwaHeaderBtn.classList.add('hidden');
+      if (pwaMobileBtn) pwaMobileBtn.classList.add('hidden');
+    }
+    window.triggerPwaInstall = triggerPwaInstall;
+
+    if (pwaHeaderBtn) pwaHeaderBtn.addEventListener('click', triggerPwaInstall);
+    if (pwaMobileBtn) pwaMobileBtn.addEventListener('click', () => {
+      triggerPwaInstall();
+      toggleMobileMenu(false);
+    });
+    if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener('click', triggerPwaInstall);
+
+    function dismissPwaBanner() {
+      if (pwaBanner) pwaBanner.classList.add('hidden');
+      localStorage.setItem('sq_pwa_dismissed', Date.now().toString());
+    }
+    window.dismissPwaBanner = dismissPwaBanner;
+
+    if (pwaDismissBannerBtn) pwaDismissBannerBtn.addEventListener('click', dismissPwaBanner);
+    if (pwaLaterBannerBtn) pwaLaterBannerBtn.addEventListener('click', dismissPwaBanner);
+
+    // Listen for successful installation
+    window.addEventListener('appinstalled', () => {
+      console.log('🎉 SmartQueue PWA successfully installed on device!');
+      deferredPrompt = null;
+      if (pwaBanner) pwaBanner.classList.add('hidden');
+      if (pwaHeaderBtn) pwaHeaderBtn.classList.add('hidden');
+      if (pwaMobileBtn) pwaMobileBtn.classList.add('hidden');
+    });
   </script>
 </body>
 </html>

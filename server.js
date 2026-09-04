@@ -497,6 +497,7 @@ const MIME_TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json; charset=utf-8',
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
@@ -509,6 +510,11 @@ const MIME_TYPES = {
 function serveStatic(req, res, filePath) {
   const ext = path.extname(filePath).toLowerCase();
   const contentType = MIME_TYPES[ext] || 'application/octet-stream';
+  const headers = { 'Content-Type': contentType };
+  if (filePath.endsWith('sw.js')) {
+    headers['Service-Worker-Allowed'] = '/';
+    headers['Cache-Control'] = 'no-cache';
+  }
 
   fs.readFile(filePath, (err, data) => {
     if (err) {
@@ -524,7 +530,7 @@ function serveStatic(req, res, filePath) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       return res.end('500 Internal Server Error');
     }
-    res.writeHead(200, { 'Content-Type': contentType });
+    res.writeHead(200, headers);
     res.end(data);
   });
 }
