@@ -1,0 +1,3056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>SmartQueue – Patient Appointment & Live Queue</title>
+
+  <!-- Tailwind CSS CDN with forms and container queries plugin -->
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+  <!-- Google Fonts: Inter, Newsreader, and Azeret Mono for authentic thermal tickets -->
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Azeret+Mono:wght@400;500;600;700&amp;family=Inter:wght@300;400;500;600;700&amp;family=Newsreader:ital,opsz,wght@1,6..72,400;1,6..72,500;1,6..72,600&amp;display=swap" rel="stylesheet"/>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Newsreader', 'Georgia', 'serif'],
+          },
+          colors: {
+            brandDark: '#101828',
+            brandGray: '#475467',
+            brandBorder: '#D0D5DD',
+            brandBgLight: '#F8F9FA',
+            sage: '#4a7c59',
+            sageLight: '#eef5ee',
+            sageBorder: '#c8ddc8',
+          },
+          boxShadow: {
+            xs: '0 1px 2px rgba(16, 24, 40, 0.05)',
+            soft: '0 4px 24px rgba(16, 24, 40, 0.08)',
+            elevated: '0 12px 36px rgba(16, 24, 40, 0.12)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style data-purpose="custom-styling">
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Landing Page Ambient Gradients */
+    .hero-glow-blob-1 {
+      position: absolute;
+      top: -120px;
+      left: 10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 70%);
+      filter: blur(60px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-glow-blob-2 {
+      position: absolute;
+      top: 100px;
+      right: 5%;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(14, 165, 233, 0.04) 50%, transparent 70%);
+      filter: blur(55px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Waves Pattern Background (Step 1) */
+    .pattern-waves {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #f8fafc;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .pattern-waves::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-radial-gradient(
+        circle at 0% 50%,
+        rgba(0, 0, 0, 0.026) 0px,
+        rgba(0, 0, 0, 0.026) 1.5px,
+        transparent 1.5px,
+        transparent 30px
+      );
+    }
+
+    /* Dot Pattern Background (Steps 2, 3, 4 - Bright Mode) */
+    .pattern-dots {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      background: #ffffff;
+      z-index: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    /* Organic cutout shape for hero image wrapper */
+    .scalloped-mask {
+      clip-path: url(#scallop-card);
+      -webkit-clip-path: url(#scallop-card);
+      position: relative;
+    }
+    .scalloped-wrap {
+      filter: drop-shadow(0 24px 48px rgba(16, 24, 40, 0.20));
+    }
+
+    /* Fine-tuned glassmorphism tags */
+    .glass-badge {
+      background: rgba(255, 255, 255, 0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    .glass-pill {
+      background: rgba(16, 24, 40, 0.55);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    /* Subtle custom checkbox styling */
+    input[type="checkbox"] {
+      border-color: #D0D5DD;
+      border-radius: 4px;
+    }
+    input[type="checkbox"]:checked {
+      background-color: #101828;
+      border-color: #101828;
+    }
+
+    /* Screens transition */
+    .screen {
+      display: none;
+      animation: fadeIn 0.35s ease;
+      position: relative;
+      z-index: 1;
+    }
+    .screen.visible {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Pulse animation */
+    @keyframes pulseSoft {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.95); }
+    }
+    .animate-pulse-soft {
+      animation: pulseSoft 2s ease-in-out infinite;
+    }
+
+    /* AI Chat Widget */
+    #medi-chat-btn {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      width: 54px; height: 54px; border-radius: 50%; border: none; cursor: pointer;
+      background: linear-gradient(135deg, #101828 0%, #344054 100%);
+      box-shadow: 0 8px 28px rgba(16, 24, 40, 0.35);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .2s, box-shadow .2s;
+    }
+    #medi-chat-btn:hover { transform: scale(1.08); box-shadow: 0 10px 32px rgba(16, 24, 40, 0.45); }
+    #medi-chat-btn svg { width: 24px; height: 24px; fill: #fff; }
+    #medi-chat-btn .chat-pulse {
+      position: absolute; width: 54px; height: 54px; border-radius: 50%;
+      background: rgba(16, 24, 40, 0.25); animation: chatPulse 2.4s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes chatPulse { 0% { transform: scale(1); opacity: .8; } 100% { transform: scale(1.8); opacity: 0; } }
+
+    #medi-chat-panel {
+      position: fixed; bottom: 90px; right: 24px; z-index: 9998;
+      width: 400px; max-height: 620px;
+      background: #ffffff; border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(16, 24, 40, 0.18), 0 0 0 1px #E4E7EC;
+      display: flex; flex-direction: column; overflow: hidden;
+      transform: scale(.9) translateY(24px); opacity: 0; pointer-events: none;
+      transition: transform .25s cubic-bezier(.34, 1.56, .64, 1), opacity .2s ease;
+    }
+    #medi-chat-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+
+    /* Mic button inside chat input */
+    #medi-chat-mic {
+      transition: all .15s ease;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       TICKET PRINTER & THERMAL RECEIPT DISPENSER
+       ══════════════════════════════════════════════════════════════ */
+    .wrapper {
+      --printer-color: #dcdac4;
+      --printer-color-2: #c0beaa;
+      --receipt-color: #f5f5f5;
+
+      font-size: 14px;
+      position: relative;
+      user-select: none;
+      width: 320px;
+      margin: 0 auto;
+    }
+
+    .printer {
+      width: 320px;
+      height: 80px;
+      border-radius: 0 0 8px 8px;
+
+      background-color: var(--printer-color);
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAAp4XiDAAAAUVBMVEWFhYWDg4N3d3dtbW17e3t1dXWBgYGHh4d5eXlzc3OLi4ubm5uVlZWPj4+NjY19fX2JiYl/f39ra2uRkZGZmZlpaWmXl5dvb29xcXGTk5NnZ2c8TV1mAAAAG3RSTlNAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEAvEOwtAAAFVklEQVR4XpWWB67c2BUFb3g557T/hRo9/WUMZHlgr4Bg8Z4qQgQJlHI4A8SzFVrapvmTF9O7dmYRFZ60YiBhJRCgh1FYhiLAmdvX0CzTOpNE77ME0Zty/nWWzchDtiqrmQDeuv3powQ5ta2eN0FY0InkqDD73lT9c9lEzwUNqgFHs9VQce3TVClFCQrSTfOiYkVJQBmpbq2L6iZavPnAPcoU0dSw0SUTqz/GtrGuXfbyyBniKykOWQWGqwwMA7QiYAxi+IlPdqo+hYHnUt5ZPfnsHJyNiDtnpJyayNBkF6cWoYGAMY92U2hXHF/C1M8uP/ZtYdiuj26UdAdQQSXQErwSOMzt/XWRWAz5GuSBIkwG1H3FabJ2OsUOUhGC6tK4EMtJO0ttC6IBD3kM0ve0tJwMdSfjZo+EEISaeTr9P3wYrGjXqyC1krcKdhMpxEnt5JetoulscpyzhXN5FRpuPHvbeQaKxFAEB6EN+cYN6xD7RYGpXpNndMmZgM5Dcs3YSNFDHUo2LGfZuukSWyUYirJAdYbF3MfqEKmjM+I2EfhA94iG3L7uKrR+GdWD73ydlIB+6hgref1QTlmgmbM3/LeX5GI1Ux1RWpgxpLuZ2+I+IjzZ8wqE4nilvQdkUdfhzI5QDWy+kw5Wgg2pGpeEVeCCA7b85BO3F9DzxB3cdqvBzWcmzbyMiqhzuYqtHRVG2y4x+KOlnyqla8AoWWpuBoYRxzXrfKuILl6SfiWCbjxoZJUaCBj1CjH7GIaDbc9kqBY3W/Rgjda1iqQcOJu2WW+76pZC9QG7M00dffe9hNnseupFL53r8F7YHSwJWUKP2q+k7RdsxyOB11n0xtOvnW4irMMFNV4H0uqwS5ExsmP9AxbDTc9JwgneAT5vTiUSm1E7BSflSt3bfa1tv8Di3R8n3Af7MNWzs49hmauE2wP+ttrq+AsWpFG2awvsuOqbipWHgtuvuaAE+A1Z/7gC9hesnr+7wqCwG8c5yAg3AL1fm8T9AZtp/bbJGwl1pNrE7RuOX7PeMRUERVaPpEs+yqeoSmuOlokqw49pgomjLeh7icHNlG19yjs6XXOMedYm5xH2YxpV2tc0Ro2jJfxC50ApuxGob7lMsxfTbeUv07TyYxpeLucEH1gNd4IKH2LAg5TdVhlCafZvpskfncCfx8pOhJzd76bJWeYFnFciwcYfubRc12Ip/ppIhA1/mSZ/RxjFDrJC5xifFjJpY2Xl5zXdguFqYyTR1zSp1Y9p+tktDYYSNflcxI0iyO4TPBdlRcpeqjK/piF5bklq77VSEaA+z8qmJTFzIWiitbnzR794USKBUaT0NTEsVjZqLaFVqJoPN9ODG70IPbfBHKK+/q/AWR0tJzYHRULOa4MP+W/HfGadZUbfw177G7j/OGbIs8TahLyynl4X4RinF793Oz+BU0saXtUHrVBFT/DnA3ctNPoGbs4hRIjTok8i+algT1lTHi4SxFvONKNrgQFAq2/gFnWMXgwffgYMJpiKYkmW3tTg3ZQ9Jq+f8XN+A5eeUKHWvJWJ2sgJ1Sop+wwhqFVijqWaJhwtD8MNlSBeWNNWTa5Z5kPZw5+LbVT99wqTdx29lMUH4OIG/D86ruKEauBjvH5xy6um/Sfj7ei6UUVk4AIl3MyD4MSSTOFgSwsH/QJWaQ5as7ZcmgBZkzjjU1UrQ74ci1gWBCSGHtuV1H2mhSnO3Wp/3fEV5a+4wz//6qy8JxjZsmxxy5+4w9CDNJY09T072iKG0EnOS0arEYgXqYnXcYHwjTtUNAcMelOd4xpkoqiTYICWFq0JSiPfPDQdnt+4/wuqcXY47QILbgAAAABJRU5ErkJggg==);
+      border: 2px solid var(--printer-color-2);
+      box-shadow:
+        0 16px 32px 0px #0002,
+        0 -30px 16px 0px #0001;
+    }
+
+    .printer::before {
+      content: "";
+      position: absolute;
+      top: -30px;
+      left: 0;
+      width: 100%;
+      height: 70px;
+      border-radius: 12px 12px 0 0;
+      border-bottom: 2px solid #0003;
+      box-shadow:
+        0 12px 16px -12px #fff5 inset,
+        0 -6px 16px -6px #0003 inset,
+        0 6px 8px -6px #0004;
+      box-sizing: border-box;
+      background-color: inherit;
+      background-image: inherit;
+      filter: brightness(1.12);
+      z-index: 2;
+    }
+
+    .printer::after {
+      content: "";
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      width: 260px;
+      height: 40px;
+      border-radius: 0 0 4px 4px;
+      border-bottom: 1px solid #0003;
+      background-color: inherit;
+      background-image: linear-gradient(
+        to top,
+        var(--printer-color),
+        60%,
+        var(--printer-color-2)
+      );
+      box-shadow: 0 4px 4px -2px #0004;
+      z-index: 1;
+    }
+
+    .printer-display {
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      position: absolute;
+      top: -10px;
+      left: 30px;
+      width: 160px;
+      height: 32px;
+
+      background-color: #000;
+      background-image: linear-gradient(transparent 0, #fff2 90%, transparent 100%);
+      background-size: 100% 8px;
+      background-repeat: no-repeat;
+      border: 3px solid var(--printer-color-2);
+      border-radius: 6px;
+      box-sizing: border-box;
+      box-shadow:
+        -1px -1px 2px 0 #fff9 inset,
+        1px 1px 5px 1px #000 inset,
+        0 0 1px 2px #0002;
+
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.8em;
+      color: #5aff5a;
+      filter: drop-shadow(1px 1px 1px #0002);
+    }
+
+    .print-button {
+      z-index: 2;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      position: absolute;
+      top: -30px;
+      right: 0;
+      margin: 16px;
+      border: 1px solid #0001;
+      border-radius: 6px;
+      width: 48px;
+      height: 36px;
+      background-color: var(--printer-color);
+      box-shadow:
+        1px 1px 2px 0 #fff8 inset,
+        -1px -1px 2px 0 #0002 inset,
+        0 2px 6px 0px #0002;
+      transition:
+        box-shadow 0.1s ease-in-out,
+        transform 0.1s ease-in-out;
+    }
+
+    .print-button:hover {
+      box-shadow:
+        2px 2px 2px 0 #fff9 inset,
+        -2px -2px 2px 0 #0002 inset,
+        0 2px 10px 0px #0002;
+      transform: scale(1.05);
+    }
+    .print-button:active {
+      box-shadow:
+        2px 2px 2px 0 #0002 inset,
+        -2px -2px 2px 0 #fff9 inset,
+        0 0px 4px 0px #fff9;
+      transform: scale(0.95);
+    }
+
+    .receipt-wrapper {
+      position: absolute;
+      top: 0;
+      left: 36px;
+      filter: drop-shadow(0 0 12px #0001);
+      transform: translateY(-100%);
+      clip-path: inset(100% -100px -100px -100px);
+      transition: clip-path 0.5s;
+    }
+
+    .receipt {
+      z-index: 2;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7em;
+      padding: 18px 14px;
+      width: 248px;
+      min-height: 200px;
+      font-size: 0.75em;
+      font-family: "Azeret Mono", "Roboto Mono", monospace;
+      font-weight: 400;
+      color: #333;
+      background-color: var(--receipt-color);
+      box-shadow:
+        0 12px 12px 0 #0001,
+        0 24px 24px 0 #0001,
+        0 36px 36px 0 #0001;
+    }
+
+    .receipt::before,
+    .receipt::after {
+      --angle: 45deg;
+      content: "";
+      display: block;
+      position: absolute;
+      left: 0px;
+      width: 100%;
+      height: 8px;
+      background: linear-gradient(
+          calc(var(--angle) * -1),
+          var(--receipt-color) 4px,
+          transparent 0
+        ),
+        linear-gradient(var(--angle), var(--receipt-color) 4px, transparent 0);
+      background-position: 4px 0;
+      background-repeat: repeat-x;
+      background-size: 8px 8px;
+    }
+    .receipt::before {
+      top: -8px;
+      background-position: 4px 0;
+    }
+    .receipt::after {
+      bottom: -8px;
+      background-position: 0 100%;
+      --angle: 225deg;
+    }
+
+    .receipt-header,
+    .receipt-subheader,
+    .receipt-message {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2em 0;
+    }
+
+    .receipt-header {
+      font-size: 1.05em;
+      font-weight: 600;
+      line-height: 1.3em;
+    }
+    .receipt-subheader {
+      border-bottom: 1px dashed #bbb;
+      padding-bottom: 6px;
+      line-height: 1.35em;
+    }
+    .receipt-message {
+      justify-content: center;
+      text-align: center;
+      padding: 0.5em 0.5em 0.2em;
+      border-top: 1px dashed #bbb;
+      font-size: 0.88em;
+      line-height: 1.35em;
+    }
+
+    .receipt .logo {
+      width: 44px;
+      font-size: 2.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(6deg);
+    }
+
+    .receipt-subtotal td {
+      border-top: 1px dashed #bbb;
+      padding-top: 5px;
+    }
+
+    .receipt-total td {
+      border-top: 1px dashed #bbb;
+      font-weight: 700;
+      padding-top: 5px;
+    }
+
+    .receipt-table {
+      font: inherit;
+      color: inherit;
+      text-align: left;
+      line-height: 1.45em;
+      width: 100%;
+    }
+    .receipt-table th {
+      font-weight: 700;
+      color: #111;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #bbb;
+    }
+    .receipt-table th:last-child,
+    .receipt-table td:last-child {
+      text-align: right;
+    }
+
+    .letter-wrapper {
+      position: inherit;
+      display: flex;
+    }
+
+    .letter {
+      display: inline-block;
+      opacity: 0;
+    }
+
+    .wrapper:has(.print-button:focus) .receipt-wrapper,
+    .wrapper.is-printed .receipt-wrapper {
+      animation:
+        print 1.2s 1 forwards ease-in,
+        display 0.4s 1 forwards cubic-bezier(0, 0.63, 0.96, 1.1);
+      animation-delay: 0s, 1.35s;
+    }
+
+    .wrapper:has(.print-button:focus) .printer-message,
+    .wrapper.is-printed .printer-message {
+      opacity: 0;
+    }
+
+    .wrapper:has(.print-button:focus) .letter,
+    .wrapper.is-printed .letter {
+      animation: show-text 0.6s 1 forwards linear;
+    }
+
+    .wrapper:has(.print-button:focus) .letter:nth-child(1), .wrapper.is-printed .letter:nth-child(1) { animation-delay: 0.05s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(2), .wrapper.is-printed .letter:nth-child(2) { animation-delay: 0.1s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(3), .wrapper.is-printed .letter:nth-child(3) { animation-delay: 0.15s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(4), .wrapper.is-printed .letter:nth-child(4) { animation-delay: 0.2s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(5), .wrapper.is-printed .letter:nth-child(5) { animation-delay: 0.25s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(6), .wrapper.is-printed .letter:nth-child(6) { animation-delay: 0.3s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(7), .wrapper.is-printed .letter:nth-child(7) { animation-delay: 0.35s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(8), .wrapper.is-printed .letter:nth-child(8) { animation-delay: 0.4s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(9), .wrapper.is-printed .letter:nth-child(9) { animation-delay: 0.45s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(10), .wrapper.is-printed .letter:nth-child(10) { animation-delay: 0.5s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(11), .wrapper.is-printed .letter:nth-child(11) { animation-delay: 0.55s; }
+    .wrapper:has(.print-button:focus) .letter:nth-child(12), .wrapper.is-printed .letter:nth-child(12) { animation-delay: 0.6s; }
+
+    .wrapper.is-printed {
+      margin-bottom: 270px;
+      transition: margin-bottom 0.5s ease;
+    }
+
+    @keyframes print {
+      100% {
+        transform: translateY(32px);
+        clip-path: inset(-20% -100px -100px -100px);
+      }
+    }
+
+    @keyframes display {
+      30% {
+        transform: translateY(48px) rotate3d(1, 0, 1, -3deg);
+      }
+      70% {
+        z-index: 5;
+      }
+      100% {
+        z-index: 5;
+        transform: translateY(36px) scale(1.02);
+      }
+    }
+
+    @keyframes show-text {
+      10%,
+      100% {
+        opacity: 1;
+      }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #printableReceipt,
+      #printableReceipt * {
+        visibility: visible !important;
+      }
+      .receipt-wrapper {
+        position: static !important;
+        transform: none !important;
+        clip-path: none !important;
+        filter: none !important;
+      }
+      #printableReceipt {
+        position: absolute !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 300px !important;
+        box-shadow: none !important;
+        border: 1px dashed #999 !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-[#f8fafc] text-[#101828] font-sans antialiased min-h-screen flex flex-col justify-start transition-colors duration-300 relative">
+
+  <!-- Background Wave Pattern (Step 1) -->
+  <div id="patternWaves" class="pattern-waves"></div>
+
+  <!-- Background Dot Pattern (Steps 2, 3, 4 - Bright Mode) -->
+  <div id="patternDots" class="pattern-dots hidden" aria-hidden="true">
+    <svg class="pointer-events-none absolute inset-0 h-full w-full fill-slate-900/[0.08]" style="mask-image: radial-gradient(ellipse 85% 85% at center, black 50%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 85% 85% at center, black 50%, transparent 100%);">
+      <defs>
+        <pattern id="dot-grid-pattern" width="20" height="20" patternUnits="userSpaceOnUse" patternContentUnits="userSpaceOnUse" x="0" y="0">
+          <circle cx="2" cy="2" r="1.5" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" stroke-width="0" fill="url(#dot-grid-pattern)" />
+    </svg>
+  </div>
+
+  <!-- TOP NAVIGATION BAR (Visible on Steps 2, 3, 4, 5) -->
+  <header id="appNav" class="hidden w-full bg-white border-b border-[#E4E7EC] sticky top-0 z-50 backdrop-blur-md bg-white/95">
+    <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-16 flex items-center justify-between gap-4">
+      
+      <!-- Brand Logo -->
+      <a class="inline-flex items-center gap-2.5 group" href="#" onclick="goToScreen(0); return false;" title="Return to Landing Page">
+        <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+          </svg>
+        </div>
+        <span class="font-bold text-base sm:text-lg text-[#101828] tracking-tight">SmartQueue</span>
+      </a>
+
+      <!-- Step Indicator Navigation -->
+      <nav class="flex items-center gap-1 bg-[#F2F4F7] p-1 rounded-full border border-[#E4E7EC] text-xs font-medium text-[#475467]">
+        <button id="ns0" onclick="goToScreen(0)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">🏠 Home</button>
+        <button id="ns1" onclick="goToScreen(1)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">1. Intake</button>
+        <button id="ns2" onclick="goToScreen(2)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">2. Hospital</button>
+        <button id="ns3" onclick="goToScreen(3)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">3. Doctor</button>
+        <button id="ns4" onclick="goToScreen(4)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">4. Slot</button>
+        <button id="ns5" onclick="goToScreen(5)" class="px-3 py-1 rounded-full transition-all hover:text-[#101828]">📋 Tokens</button>
+      </nav>
+
+      <!-- Quick Action / Status -->
+      <div class="flex items-center gap-3">
+        <div id="navPatientBadge" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-[#D0D5DD] text-xs font-semibold text-slate-800">
+          <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+          <span id="navPatientName">Patient</span>
+        </div>
+        <button onclick="goToScreen(5)" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] bg-white hover:bg-slate-50 transition-colors shadow-xs text-[#344054] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="hidden sm:inline">Live Queue</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- SCREEN 0: PREMIUM SMARTQUEUE HEALTHCARE LANDING PAGE -->
+  <div class="screen visible w-full" id="screen0">
+
+    <!-- Top Landing Navigation Bar -->
+    <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 transition-all">
+      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+        
+        <!-- Brand Logo -->
+        <a href="#" onclick="goToScreen(0); return false;" class="inline-flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white shadow-md shadow-slate-950/20 transition-transform group-hover:scale-105">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-xl text-slate-900 tracking-tight">SmartQueue</span>
+              <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">OPD Live</span>
+            </div>
+            <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Digital Hospital & Clinic Queue System</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden lg:flex items-center gap-7 text-sm font-semibold text-slate-600">
+          <a href="#how-it-works" class="hover:text-slate-950 transition-colors">How It Works</a>
+          <a href="#features-section" class="hover:text-slate-950 transition-colors">Features</a>
+          <a href="#hospitals-section" class="hover:text-slate-950 transition-colors">Hospitals</a>
+          <a href="#doctors-section" class="hover:text-slate-950 transition-colors">Specialists</a>
+          <a href="#faq-section" class="hover:text-slate-950 transition-colors">FAQ</a>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="flex items-center gap-2.5 sm:gap-3.5">
+          <button type="button" onclick="goToScreen(5)" class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-2">
+            <svg class="w-4 h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span class="hidden sm:inline">Track</span> <span>Tokens</span>
+          </button>
+
+          <button type="button" onclick="goToScreen(1)" class="px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md shadow-slate-950/20 hover:shadow-lg transition-all flex items-center gap-2 group">
+            <span>Book Appointment</span>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+      </div>
+    </header>
+
+    <main class="w-full relative overflow-hidden">
+      
+      <!-- HERO SECTION -->
+      <section class="relative pt-8 sm:pt-14 pb-16 sm:pb-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        
+        <!-- Ambient Background Glows -->
+        <div class="hero-glow-blob-1"></div>
+        <div class="hero-glow-blob-2"></div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center relative z-10">
+          
+          <!-- Hero Left Column: Copy & CTAs -->
+          <div class="lg:col-span-7 flex flex-col justify-center text-left">
+            
+            <!-- Live Status Pill -->
+            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold w-fit mb-5 shadow-2xs">
+              <span class="flex h-2 w-2 relative">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+              </span>
+              <span>15,000+ OPD Queues Digitized • Zero Waiting Room Delays</span>
+            </div>
+
+            <!-- Main Headline -->
+            <h1 class="text-3xl sm:text-5xl lg:text-[54px] font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-6">
+              Skip The Crowded OPD.
+              <span class="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600">
+                Track Doctor Queues
+              </span>
+              In Real-Time.
+            </h1>
+
+            <!-- Subtitle -->
+            <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-[620px] mb-8 font-normal">
+              Book verified specialist appointments across premier institutions like <strong>AIIMS Rishikesh</strong> and <strong>Himalayan Institute</strong>. Monitor your live queue position directly from your phone, and arrive right when the doctor is ready for you.
+            </p>
+
+            <!-- CTA Button Cluster -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-9">
+              
+              <!-- Primary Booking CTA -->
+              <button type="button" onclick="goToScreen(1)" class="px-6 py-3.5 rounded-xl text-base font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-lg shadow-slate-950/25 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group">
+                <svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>Book Appointment & Get Token</span>
+                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+
+              <!-- Secondary AI Doctor CTA -->
+              <button type="button" onclick="toggleMediChat()" class="px-5 py-3.5 rounded-xl text-sm font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
+                <span>Ask SmartQueue AI Assistant</span>
+              </button>
+
+            </div>
+
+            <!-- Social Proof Bar -->
+            <div class="pt-6 border-t border-slate-200/80 flex flex-wrap items-center gap-6 text-xs text-slate-600">
+              
+              <!-- Avatars -->
+              <div class="flex items-center gap-2">
+                <div class="flex -space-x-2 overflow-hidden">
+                  <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&auto=format&fit=crop&q=80" alt="Dr. Priya"/>
+                  <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=100&auto=format&fit=crop&q=80" alt="Dr. Rohan"/>
+                  <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=100&auto=format&fit=crop&q=80" alt="Dr. Anita"/>
+                  <img class="inline-block h-8 w-8 rounded-full ring-2 ring-white object-cover" src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=100&auto=format&fit=crop&q=80" alt="Dr. Suresh"/>
+                </div>
+                <div>
+                  <div class="flex items-center text-amber-500 text-xs">
+                    ★★★★★ <span class="font-bold text-slate-900 ml-1">4.9/5</span>
+                  </div>
+                  <span class="text-[11px] text-slate-500">15,200+ Consultations</span>
+                </div>
+              </div>
+
+              <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+
+              <!-- Badges -->
+              <div class="flex items-center gap-3 text-[11px] text-slate-500 font-medium">
+                <span class="flex items-center gap-1 text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200/60">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  Verified Specialists
+                </span>
+                <span class="flex items-center gap-1 text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200/60">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                  Free Email Confirmations
+                </span>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Hero Right Column: Interactive Live OPD Kiosk & Visual -->
+          <div class="lg:col-span-5 relative">
+            
+            <!-- Floating Decorative Badge Top Right -->
+            <div class="absolute -top-4 -right-2 z-20 hidden sm:flex items-center gap-2 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-bold text-slate-800">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span>Live Queue Sync Active</span>
+            </div>
+
+            <!-- Live OPD Counter Board Card -->
+            <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-800 relative overflow-hidden">
+              
+              <!-- Subtle card background glow -->
+              <div class="absolute top-0 right-0 w-48 h-48 bg-blue-600/20 rounded-full filter blur-3xl pointer-events-none"></div>
+
+              <!-- Top Bar of Kiosk Display -->
+              <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-5 text-xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="font-bold tracking-wide text-slate-200 uppercase text-[11px]">AIIMS Rishikesh • OPD Wing 2</span>
+                </div>
+                <span class="font-mono text-slate-400 text-[11px]">Chamber #104</span>
+              </div>
+
+              <!-- Doctor Status & Info -->
+              <div class="flex items-center gap-3.5 mb-6">
+                <img class="w-12 h-12 rounded-2xl object-cover border-2 border-slate-700 shadow-md" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=160&auto=format&fit=crop&q=80" alt="Dr. Priya Sharma"/>
+                <div>
+                  <h4 class="font-bold text-base text-white">Dr. Priya Sharma</h4>
+                  <p class="text-xs text-blue-400 font-medium">General Medicine • Senior Consultant</p>
+                  <div class="flex items-center gap-2 mt-0.5 text-[11px] text-emerald-400 font-semibold">
+                    <span>● In Chamber</span>
+                    <span class="text-slate-500">•</span>
+                    <span class="text-slate-400 font-normal">Avg 6m per consultation</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Primary Token Served Banner -->
+              <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 mb-5 text-center relative">
+                <span class="text-[11px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Now Consulting (Serving Now)</span>
+                <div id="simCurrentTokenNum" class="text-4xl sm:text-5xl font-extrabold tracking-tight font-mono text-emerald-400 transition-all duration-300">
+                  #SQ-1042
+                </div>
+                <div class="mt-2 flex items-center justify-center gap-2 text-xs text-slate-400">
+                  <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <span>Consultation Elapsed: <strong>4 mins</strong></span>
+                </div>
+              </div>
+
+              <!-- Queue Pipeline (Next Up) -->
+              <div class="space-y-2 mb-5">
+                <div class="flex items-center justify-between text-xs text-slate-400 px-1 font-semibold">
+                  <span>Up Next in Line</span>
+                  <span>Est. Wait Time</span>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-900/60 hover:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-800/60 text-xs">
+                  <div class="flex items-center gap-2 font-mono font-bold text-white">
+                    <span class="text-amber-400">▶</span>
+                    <span id="simNextTokenNum">#SQ-1043</span>
+                    <span class="text-[10px] text-slate-400 font-sans font-normal">(You're 1st next)</span>
+                  </div>
+                  <span class="font-semibold text-amber-400">~4 mins</span>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-900/40 px-3.5 py-2 rounded-xl border border-slate-800/40 text-xs text-slate-300">
+                  <div class="flex items-center gap-2 font-mono">
+                    <span class="text-slate-500">2.</span>
+                    <span id="simNextTokenNum2">#SQ-1044</span>
+                  </div>
+                  <span class="text-slate-400 font-mono">~10 mins</span>
+                </div>
+
+                <div class="flex items-center justify-between bg-slate-900/40 px-3.5 py-2 rounded-xl border border-slate-800/40 text-xs text-slate-300">
+                  <div class="flex items-center gap-2 font-mono">
+                    <span class="text-slate-500">3.</span>
+                    <span id="simNextTokenNum3">#SQ-1045</span>
+                  </div>
+                  <span class="text-slate-400 font-mono">~16 mins</span>
+                </div>
+              </div>
+
+              <!-- Interactive Simulator Button & Booking Action -->
+              <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
+                <button type="button" onclick="simNextToken()" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" title="Click to advance queue simulator">
+                  <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m13 17 5-5-5-5M6 17l5-5-5-5"/></svg>
+                  <span>Simulate Next Turn</span>
+                </button>
+
+                <button type="button" onclick="goToScreen(1)" class="flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5">
+                  <span>Get My Token</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Bottom Floating Pill with Hospital Image -->
+            <div class="mt-4 bg-white rounded-2xl p-3.5 shadow-md border border-slate-200 flex items-center gap-3.5">
+              <img class="w-10 h-10 rounded-xl object-cover border border-slate-200" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=160&auto=format&fit=crop&q=80" alt="Hospital Reception"/>
+              <div class="text-xs">
+                <p class="font-bold text-slate-900">Zero Standing In Line</p>
+                <p class="text-[11px] text-slate-500">Wait from home, car, or cafe with live phone updates.</p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- TRUST & METRICS RIBBON -->
+      <section class="bg-white border-y border-slate-200/80 py-8 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          
+          <div class="p-3">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono">8+</div>
+            <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Super-Specialty Hospitals</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">AIIMS, Himalayan, Shivalik, Max</p>
+          </div>
+
+          <div class="p-3">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono">50+</div>
+            <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Verified Specialists</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Cardiology, Ortho, Neuro, Medicine</p>
+          </div>
+
+          <div class="p-3">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-emerald-600 font-mono">&lt; 12 Mins</div>
+            <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Average Wait Time</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">vs 95 mins industry average</p>
+          </div>
+
+          <div class="p-3">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-600 font-mono">100% Free</div>
+            <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Digital Tokens & Alerts</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">Instant Email & Ticket Receipt</p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- HOW IT WORKS SECTION -->
+      <section id="how-it-works" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            Simple 3-Step Process
+          </span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+            How SmartQueue Works
+          </h2>
+          <p class="text-slate-600 text-sm sm:text-base mt-2">
+            No complicated apps or sign-ups required. Get matched with top specialists and track your OPD token in under 60 seconds.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+          
+          <!-- Step 1 -->
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                1
+              </div>
+              <h3 class="text-lg font-bold text-slate-950 mb-2">Patient Intake & AI Matching</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Provide your basic contact info and describe your symptoms. Our medical triage AI matches you with the ideal specialist (e.g. Cardiologist, Orthopedic, Dermatologist).
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-blue-700">
+              <span>Bilingual AI Triage Support</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-slate-950/20 group-hover:scale-105 transition-transform">
+                2
+              </div>
+              <h3 class="text-lg font-bold text-slate-950 mb-2">Select Hospital & Time Slot</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Choose from verified hospitals like AIIMS Rishikesh, Shivalik Hospital, or Himalayan Institute. Select an available AM or PM appointment slot that fits your day.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-slate-800">
+              <span>Live Doctor Availability</span>
+              <span>→</span>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+            <div>
+              <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+                3
+              </div>
+              <h3 class="text-lg font-bold text-slate-950 mb-2">Get Digital Token & Auto Alerts</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Get an instant QR token number, print a realistic thermal queue receipt, and receive confirmation emails. The doctor automatically receives your record in their daily Excel schedule.
+              </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-emerald-700">
+              <span>Live Phone Tracking Active</span>
+              <span>→</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- How It Works Action -->
+        <div class="mt-12 text-center">
+          <button type="button" onclick="goToScreen(1)" class="px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+            <span>Start Booking in 60 Seconds</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+      </section>
+
+      <!-- CORE FEATURES GRID -->
+      <section id="features-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1400px] mx-auto">
+          
+          <div class="text-center max-w-2xl mx-auto mb-14">
+            <span class="text-xs font-bold tracking-wider uppercase text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+              Everything You Need
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+              Built for Patients, Doctors & Hospitals
+            </h2>
+            <p class="text-slate-600 text-sm sm:text-base mt-2">
+              Every detail engineered to remove friction from the healthcare visit experience.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
+            
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl mb-4">
+                ⏱️
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">Live Digital Queue Tracking</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Watch the OPD counter advance live from anywhere. No need to sit in crowded germ-filled waiting rooms — arrive exactly when you're 2 patients away.
+              </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-xl mb-4">
+                🤖
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">24/7 SmartQueue AI Assistant</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Powered by state-of-the-art AI with failover rotation. Speak or type in English, Hindi, or Hinglish to check queue timings, doctor credentials, and triage advice.
+              </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl mb-4">
+                🖨️
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">Thermal Receipt Printer Simulator</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Generates a realistic thermal paper ticket with authentic mono font, barcode, doctor chamber info, and QR code for reception check-in.
+              </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl mb-4">
+                📧
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">Automated Email & Doctor Excel</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Patients receive immediate booking confirmation emails, while doctors receive automatically generated Excel sheets with the patient roster.
+              </p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center text-xl mb-4">
+                🏥
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">Multi-Hospital Network</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Connect seamlessly with premier medical centers across Rishikesh, Haridwar, Dehradun, Saharanpur, and Roorkee through one single portal.
+              </p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+              <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl mb-4">
+                🚨
+              </div>
+              <h3 class="text-base font-bold text-slate-950 mb-2">Instant Emergency Integration</h3>
+              <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Direct integration with 108 Emergency Medical Services. Critical red-flag symptoms prompt immediate emergency guidance rather than queue booking.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- PARTNER HOSPITALS SHOWCASE -->
+      <section id="hospitals-section" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+          <div>
+            <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+              Premier Healthcare Network
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+              Partner Hospitals
+            </h2>
+            <p class="text-slate-600 text-sm sm:text-base mt-1">
+              Direct digital OPD queue access to verified government and private medical institutions.
+            </p>
+          </div>
+          <button type="button" onclick="goToScreen(1)" class="text-xs sm:text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1.5 self-start md:self-auto">
+            <span>View All 8 Hospitals</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Hospital 1 -->
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="h-44 w-full relative overflow-hidden bg-slate-100">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&auto=format&fit=crop&q=80" alt="AIIMS Rishikesh"/>
+                <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 shadow-xs">
+                  Government Super-Specialty
+                </span>
+                <span class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-xs text-slate-900 shadow-xs">
+                  ★ 4.8 (3.2k)
+                </span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-base text-slate-950">AIIMS Rishikesh</h3>
+                <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                  <span>📍</span> Virbhadra Road, Rishikesh, Uttarakhand
+                </p>
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-600">
+                  <span>Avg. Queue Wait:</span>
+                  <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">15 mins</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 pt-0">
+              <button type="button" onclick="bookWithHospital(1)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                Book at AIIMS Rishikesh
+              </button>
+            </div>
+          </div>
+
+          <!-- Hospital 2 -->
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="h-44 w-full relative overflow-hidden bg-slate-100">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80" alt="Himalayan Institute"/>
+                <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 border border-blue-300 shadow-xs">
+                  Multi-Specialty
+                </span>
+                <span class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-xs text-slate-900 shadow-xs">
+                  ★ 4.9 (4.1k)
+                </span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-base text-slate-950">Himalayan Institute (HIMS)</h3>
+                <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                  <span>📍</span> Swami Ram Nagar, Dehradun
+                </p>
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-600">
+                  <span>Avg. Queue Wait:</span>
+                  <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">25 mins</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 pt-0">
+              <button type="button" onclick="bookWithHospital(3)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                Book at Himalayan
+              </button>
+            </div>
+          </div>
+
+          <!-- Hospital 3 -->
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="h-44 w-full relative overflow-hidden bg-slate-100">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&auto=format&fit=crop&q=80" alt="Shivalik Hospital"/>
+                <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
+                  Private Hospital
+                </span>
+                <span class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-xs text-slate-900 shadow-xs">
+                  ★ 4.6 (1.8k)
+                </span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-base text-slate-950">Shivalik Hospital</h3>
+                <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                  <span>📍</span> Ranipur More, Haridwar
+                </p>
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-600">
+                  <span>Avg. Queue Wait:</span>
+                  <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">10 mins</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 pt-0">
+              <button type="button" onclick="bookWithHospital(2)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                Book at Shivalik
+              </button>
+            </div>
+          </div>
+
+          <!-- Hospital 4 -->
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+            <div>
+              <div class="h-44 w-full relative overflow-hidden bg-slate-100">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80" alt="Max Super Specialty"/>
+                <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 border border-purple-300 shadow-xs">
+                  Super Specialty
+                </span>
+                <span class="absolute bottom-3 right-3 text-[11px] font-bold px-2 py-0.5 rounded-md bg-white/90 backdrop-blur-xs text-slate-900 shadow-xs">
+                  ★ 4.7 (2.4k)
+                </span>
+              </div>
+              <div class="p-5">
+                <h3 class="font-bold text-base text-slate-950">Max Super Specialty</h3>
+                <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                  <span>📍</span> Court Road, Saharanpur
+                </p>
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-600">
+                  <span>Avg. Queue Wait:</span>
+                  <span class="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">20 mins</span>
+                </div>
+              </div>
+            </div>
+            <div class="p-5 pt-0">
+              <button type="button" onclick="bookWithHospital(4)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                Book at Max Hospital
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- TOP SPECIALISTS SHOWCASE -->
+      <section id="doctors-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[1400px] mx-auto">
+          
+          <div class="text-center max-w-2xl mx-auto mb-14">
+            <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+              Verified Doctors
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+              Consult Top Specialists
+            </h2>
+            <p class="text-slate-600 text-sm sm:text-base mt-2">
+              Highly credentialed consultants ready to diagnose and treat your concerns.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Doctor 1 -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+              <div>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=240&auto=format&fit=crop&q=80" alt="Dr. Priya Sharma"/>
+                <h3 class="font-bold text-base text-slate-950">Dr. Priya Sharma</h3>
+                <span class="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200 mt-1">General Physician</span>
+                <p class="text-xs text-slate-500 mt-2">12 yrs exp • AIIMS Rishikesh</p>
+                <div class="mt-2 text-xs text-amber-500 font-semibold">
+                  ★ 4.9 <span class="text-slate-400 font-normal">(420 reviews)</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100">
+                <button type="button" onclick="bookWithDoctor(1)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                  Consult Dr. Priya
+                </button>
+              </div>
+            </div>
+
+            <!-- Doctor 2 -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+              <div>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=240&auto=format&fit=crop&q=80" alt="Dr. Rohan Mehta"/>
+                <h3 class="font-bold text-base text-slate-950">Dr. Rohan Mehta</h3>
+                <span class="inline-block text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200 mt-1">Cardiologist</span>
+                <p class="text-xs text-slate-500 mt-2">15 yrs exp • Himalayan Inst.</p>
+                <div class="mt-2 text-xs text-amber-500 font-semibold">
+                  ★ 4.9 <span class="text-slate-400 font-normal">(310 reviews)</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100">
+                <button type="button" onclick="bookWithDoctor(3)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                  Consult Dr. Rohan
+                </button>
+              </div>
+            </div>
+
+            <!-- Doctor 3 -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+              <div>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=240&auto=format&fit=crop&q=80" alt="Dr. Anita Gupta"/>
+                <h3 class="font-bold text-base text-slate-950">Dr. Anita Gupta</h3>
+                <span class="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200 mt-1">Dermatologist</span>
+                <p class="text-xs text-slate-500 mt-2">9 yrs exp • Shivalik Hospital</p>
+                <div class="mt-2 text-xs text-amber-500 font-semibold">
+                  ★ 4.8 <span class="text-slate-400 font-normal">(285 reviews)</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100">
+                <button type="button" onclick="bookWithDoctor(4)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                  Consult Dr. Anita
+                </button>
+              </div>
+            </div>
+
+            <!-- Doctor 4 -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+              <div>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=240&auto=format&fit=crop&q=80" alt="Dr. Suresh Verma"/>
+                <h3 class="font-bold text-base text-slate-950">Dr. Suresh Verma</h3>
+                <span class="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 mt-1">Orthopedic</span>
+                <p class="text-xs text-slate-500 mt-2">18 yrs exp • Max Hospital</p>
+                <div class="mt-2 text-xs text-amber-500 font-semibold">
+                  ★ 4.9 <span class="text-slate-400 font-normal">(530 reviews)</span>
+                </div>
+              </div>
+              <div class="mt-5 pt-4 border-t border-slate-100">
+                <button type="button" onclick="bookWithDoctor(5)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                  Consult Dr. Suresh
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- TESTIMONIALS SECTION -->
+      <section class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <span class="text-xs font-bold tracking-wider uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            Real Patient Experiences
+          </span>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+            Loved by Over 15,000 Patients
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+            <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
+              "Earlier at AIIMS Rishikesh, I used to wait 2.5 hours in the OPD hall with my elderly father. With SmartQueue, we waited comfortably in our car and walked in right when token #SQ-1042 was called. Remarkable system!"
+            </p>
+            <div class="flex items-center gap-3">
+              <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" alt="Rajesh K."/>
+              <div>
+                <h4 class="font-bold text-xs text-slate-900">Rajesh K. Sharma</h4>
+                <p class="text-[11px] text-slate-500">Haridwar • Visited AIIMS</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+            <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
+              "The AI chatbot in Hindi helped me realize I needed an Orthopedic rather than a general doctor for my knee pain. Got an instant token and the thermal ticket was printed immediately on my phone."
+            </p>
+            <div class="flex items-center gap-3">
+              <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Sunita D."/>
+              <div>
+                <h4 class="font-bold text-xs text-slate-900">Sunita Devi</h4>
+                <p class="text-[11px] text-slate-500">Dehradun • Visited HIMS</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+            <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
+              "The automated email confirmation arrived within 5 seconds. My doctor already had my symptoms sheet ready when I stepped inside. Zero hassle, zero confusion."
+            </p>
+            <div class="flex items-center gap-3">
+              <img class="w-10 h-10 rounded-full object-cover" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80" alt="Amit S."/>
+              <div>
+                <h4 class="font-bold text-xs text-slate-900">Amit Saxena</h4>
+                <p class="text-[11px] text-slate-500">Roorkee • Visited Shivalik</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- FAQ SECTION -->
+      <section id="faq-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-[900px] mx-auto">
+          
+          <div class="text-center mb-12">
+            <span class="text-xs font-bold tracking-wider uppercase text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
+              Got Questions?
+            </span>
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight mt-3">
+              Frequently Asked Questions
+            </h2>
+          </div>
+
+          <div class="space-y-4">
+            
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs" open>
+              <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
+                <span>Is SmartQueue free to use for patients?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                Yes! Generating a digital queue token, tracking live OPD progress, and receiving email confirmations is 100% free for all patients. Standard hospital consultation charges apply at hospital billing counters as usual.
+              </p>
+            </details>
+
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+              <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
+                <span>How will I know when it is my turn?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                You can monitor your live queue token in real-time on our web tracker. We recommend arriving 10-15 minutes before your estimated time slot.
+              </p>
+            </details>
+
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+              <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
+                <span>Can I print a physical ticket receipt?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                Yes. On the confirmation screen, SmartQueue includes a realistic thermal receipt printer simulator that you can print, save as PDF, or display on your mobile screen for hospital receptionist scanning.
+              </p>
+            </details>
+
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+              <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
+                <span>What should I do in a severe medical emergency?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                If you or a patient experience acute chest pain, breathlessness, heavy bleeding, or loss of consciousness, do NOT wait for an OPD queue token. Immediately dial <strong>108 / 112</strong> or proceed directly to the nearest hospital Emergency Room.
+              </p>
+            </details>
+
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+              <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
+                <span>How can I reach customer support?</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+              </summary>
+              <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                For any assistance with appointments, tokens, hospital timings, or technical queries, contact our 24/7 customer support team at <a href="mailto:smartqueue70@gmail.com" class="text-blue-600 font-bold underline hover:text-blue-800">smartqueue70@gmail.com</a>.
+              </p>
+            </details>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- BOTTOM CONVERSION CTA BANNER -->
+      <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
+        <div class="rounded-3xl bg-slate-950 text-white p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl border border-slate-800">
+          
+          <div class="absolute inset-0 bg-radial from-blue-900/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+
+          <div class="relative z-10 max-w-2xl mx-auto">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3.5 py-1.5 rounded-full inline-block mb-4">
+              Get Started In 60 Seconds
+            </span>
+            <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
+              Stop Waiting in OPD Lines Today.
+            </h2>
+            <p class="text-sm sm:text-base text-slate-300 leading-relaxed mb-8">
+              Join thousands of patients who enjoy smooth, digitized hospital visits with zero stress.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <button type="button" onclick="goToScreen(1)" class="w-full sm:w-auto px-8 py-4 rounded-xl text-sm sm:text-base font-bold text-slate-950 bg-white hover:bg-slate-100 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+                <span>Book Appointment Now</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+              </button>
+              <button type="button" onclick="toggleMediChat()" class="w-full sm:w-auto px-6 py-4 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors flex items-center justify-center gap-2">
+                <span>Talk to AI Assistant</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+
+    <!-- COMPREHENSIVE FOOTER -->
+    <footer class="bg-white border-t border-slate-200/90 pt-12 pb-8 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-[1400px] mx-auto">
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-slate-200">
+          
+          <div class="md:col-span-2">
+            <div class="flex items-center gap-2.5 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-slate-950 flex items-center justify-center text-white font-bold text-sm">
+                SQ
+              </div>
+              <span class="font-extrabold text-lg text-slate-900 tracking-tight">SmartQueue</span>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-600 max-w-md leading-relaxed">
+              SmartQueue is India's next-generation digital healthcare queue and appointment platform, connecting patients directly to verified specialists across government and private institutions.
+            </p>
+            <div class="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-500">
+              <span class="font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">✉️ Support: <a href="mailto:smartqueue70@gmail.com" class="underline hover:text-blue-900 font-bold">smartqueue70@gmail.com</a></span>
+              <span class="font-semibold text-rose-600">🚨 National Emergency: 108</span>
+              <span>•</span>
+              <span class="font-semibold text-blue-600">Health Helpline: 1075</span>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-900 mb-3">Partner Network</h4>
+            <ul class="space-y-2 text-xs text-slate-600 font-medium">
+              <li><a href="#" onclick="bookWithHospital(1); return false;" class="hover:text-slate-950">AIIMS Rishikesh</a></li>
+              <li><a href="#" onclick="bookWithHospital(3); return false;" class="hover:text-slate-950">Himalayan Institute (HIMS)</a></li>
+              <li><a href="#" onclick="bookWithHospital(2); return false;" class="hover:text-slate-950">Shivalik Hospital Haridwar</a></li>
+              <li><a href="#" onclick="bookWithHospital(4); return false;" class="hover:text-slate-950">Max Super Specialty</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-slate-900 mb-3">Customer Support & Quick Links</h4>
+            <ul class="space-y-2 text-xs text-slate-600 font-medium">
+              <li><a href="mailto:smartqueue70@gmail.com" class="text-blue-600 font-bold hover:text-blue-800 flex items-center gap-1.5"><span>✉️</span> Support: smartqueue70@gmail.com</a></li>
+              <li><a href="#" onclick="goToScreen(1); return false;" class="hover:text-slate-950">Book New Appointment</a></li>
+              <li><a href="#" onclick="goToScreen(5); return false;" class="hover:text-slate-950">Live Queue & Active Tokens</a></li>
+              <li><a href="#" onclick="toggleMediChat(); return false;" class="hover:text-slate-950">AI Symptom Guidance</a></li>
+              <li><a href="#faq-section" class="hover:text-slate-950">Patient FAQ & Support</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <p>© 2026 SmartQueue Healthcare Systems. All rights reserved.</p>
+          <p class="text-[11px] text-slate-400">Medical Disclaimer: SmartQueue facilitates appointment scheduling. For life-threatening emergencies, call 108/112 immediately.</p>
+        </div>
+
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- SCREEN 1: SPLIT HERO INTAKE & MATCHING (SMARTQUEUE DESIGN SYSTEM) -->
+  <div class="screen w-full" id="screen1">
+    <main class="w-full max-w-[1440px] mx-auto min-h-screen lg:h-screen p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-8 lg:gap-12" data-purpose="page-layout">
+      
+      <!-- BEGIN: LeftFormSection -->
+      <section class="w-full lg:w-[48%] flex flex-col justify-between py-2 lg:pl-6 xl:pl-10" data-purpose="contact-form-section">
+        
+        <!-- Top Brand Header -->
+        <header class="mb-4 lg:mb-6 flex items-center justify-between" data-purpose="brand-header">
+          <a class="inline-flex items-center gap-2.5 group" href="#" onclick="goToScreen(0); return false;" title="Return to Landing Page">
+            <div class="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-white shadow-sm transition-transform group-hover:scale-105">
+              <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+              </svg>
+            </div>
+            <span class="font-bold text-lg text-[#101828] tracking-tight">SmartQueue</span>
+          </a>
+
+          <!-- Back to Home Shortcut -->
+          <button type="button" onclick="goToScreen(0)" class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors" title="Back to Landing Page">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+            <span>Back to Home</span>
+          </button>
+        </header>
+
+        <!-- Form Content Wrapper -->
+        <div class="max-w-[480px] w-full flex-grow flex flex-col justify-center">
+          
+          <!-- Headline -->
+          <h1 class="text-2xl sm:text-[28px] lg:text-[32px] font-semibold text-[#101828] leading-[1.25] tracking-tight mb-5">
+            Get matched with the perfect specialist for your consultation
+          </h1>
+
+          <!-- Match Form -->
+          <form class="space-y-3.5" data-purpose="lead-intake-form" onsubmit="event.preventDefault(); registerPatient();">
+            
+            <!-- Name Row -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="fname">First name</label>
+                <input class="w-full px-3.5 py-2.5 text-sm text-[#101828] placeholder-[#667085] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="fname" placeholder="First name" required="" type="text"/>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="lname">Last name</label>
+                <input class="w-full px-3.5 py-2.5 text-sm text-[#101828] placeholder-[#667085] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="lname" placeholder="Last name" required="" type="text"/>
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="email">Email</label>
+              <input class="w-full px-3.5 py-2.5 text-sm text-[#101828] placeholder-[#667085] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="email" placeholder="Your email address" type="email"/>
+            </div>
+
+            <!-- Phone Number -->
+            <div>
+              <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="phone">Phone number</label>
+              <div class="relative flex rounded-lg shadow-xs border border-[#D0D5DD] focus-within:ring-2 focus-within:ring-slate-900/10 focus-within:border-slate-900 bg-white">
+                <button aria-label="Select country" class="flex items-center gap-1.5 pl-3 pr-2 py-2.5 text-sm text-[#101828] font-medium border-r border-[#D0D5DD] hover:bg-slate-50 transition-colors rounded-l-lg shrink-0" type="button">
+                  <span>IN</span>
+                  <svg class="w-4 h-4 text-[#667085]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  </svg>
+                </button>
+                <input class="w-full border-0 px-3.5 py-2.5 text-sm text-[#101828] placeholder-[#667085] focus:ring-0 rounded-r-lg" id="phone" placeholder="+91 98765 43210" required="" type="tel"/>
+              </div>
+            </div>
+
+            <!-- Age, Gender, Blood Group Row -->
+            <div class="grid grid-cols-3 gap-2.5">
+              <div>
+                <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="age">Age</label>
+                <input class="w-full px-3 py-2 text-sm text-[#101828] placeholder-[#667085] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="age" min="1" max="120" placeholder="Age" required="" type="number"/>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="gender">Gender</label>
+                <select class="w-full px-2 py-2 text-xs sm:text-sm text-[#101828] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="gender" required="">
+                  <option value="">Gender</option>
+                  <option>Male</option>
+                  <option>Female</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-[#344054] mb-1.5" for="blood">Blood</label>
+                <select class="w-full px-2 py-2 text-xs sm:text-sm text-[#101828] bg-white border border-[#D0D5DD] rounded-lg shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors" id="blood">
+                  <option value="">(Opt)</option>
+                  <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                  <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2">
+              <button class="w-full bg-[#1e232c] hover:bg-black text-white font-medium py-3 px-4 rounded-xl text-sm transition-all duration-200 shadow-sm active:scale-[0.99] flex items-center justify-center cursor-pointer" type="submit">
+                Get matched
+              </button>
+            </div>
+          </form>
+
+          <!-- Footer Contact Alternative -->
+          <footer class="mt-4 text-center" data-purpose="form-footer">
+            <p class="text-xs text-[#475467]">
+              Customer Support: <a class="text-blue-600 font-semibold underline underline-offset-2 hover:text-blue-900 transition-colors" href="mailto:smartqueue70@gmail.com">smartqueue70@gmail.com</a> · Emergency: <a href="tel:108" class="text-emerald-700 font-semibold underline underline-offset-2">108</a> · <a href="404.html" class="text-[#667085] hover:text-[#101828] underline underline-offset-2">404 Error Demo</a>
+            </p>
+          </footer>
+
+        </div>
+        <div class="hidden lg:block h-2"></div>
+      </section>
+      <!-- END: LeftFormSection -->
+
+      <!-- SVG Definition for Scallop Cutout Shape (Image 1 Style) -->
+      <svg width="0" height="0" class="absolute pointer-events-none" aria-hidden="true">
+        <defs>
+          <clipPath id="scallop-card" clipPathUnits="objectBoundingBox">
+            <path d="M 0.14 0
+                     L 0.92 0
+                     A 0.08 0.07 0 0 1 1 0.07
+                     L 1 0.88
+                     A 0.07 0.06 0 0 0 0.93 0.94
+                     A 0.07 0.06 0 0 1 0.86 1
+                     L 0.08 1
+                     A 0.08 0.07 0 0 1 0 0.93
+                     L 0 0.12
+                     A 0.07 0.06 0 0 0 0.07 0.06
+                     A 0.07 0.06 0 0 1 0.14 0
+                     Z" />
+          </clipPath>
+        </defs>
+      </svg>
+
+      <!-- Right Visual Hero Card with Scalloped Shape Mask -->
+      <div class="w-full lg:w-[52%] scalloped-wrap flex min-h-[540px] lg:min-h-full">
+        <section class="w-full relative scalloped-mask bg-[#1E293B] flex flex-col justify-end p-6 sm:p-8 lg:p-10" data-purpose="visual-hero-showcase">
+          
+          <!-- Background Image of Modern Healthcare / Consultation (Image 2) -->
+          <div class="absolute inset-0 z-0">
+            <img alt="Hospital appointment desk with schedule now screen and queue kiosk" class="w-full h-full object-cover object-[center_right] sm:object-center" src="hero-hospital.jpg"/>
+            <!-- Gradient overlay for high legibility -->
+            <div class="absolute inset-0 bg-gradient-to-t from-[#101828]/95 via-[#101828]/50 to-transparent"></div>
+          </div>
+
+          <!-- Floating Hospital Status Tag Badge -->
+          <div class="absolute top-[34%] left-[16%] sm:left-[22%] z-10 hidden sm:block pointer-events-none" data-purpose="floating-profile-card">
+            <div class="glass-pill text-white px-3.5 py-2.5 rounded-xl shadow-lg border border-white/20 flex flex-col gap-0.5 text-xs">
+              <div class="font-medium flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Appointment Desk · Live Queue</span>
+              </div>
+              <div class="flex items-center gap-1 text-[11px] text-white/80">
+                <svg class="w-3.5 h-3.5 text-white/80 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                  <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+                </svg>
+                <span>AIIMS Rishikesh &amp; Partner Network</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Content Container -->
+          <div class="relative z-10 flex flex-col gap-6">
+            
+            <!-- Serif Italic Headline -->
+            <h2 class="font-serif italic text-3xl sm:text-4xl lg:text-[42px] font-normal leading-[1.2] text-white max-w-xl drop-shadow-sm tracking-wide">
+              Access verified specialists across 8+ top hospitals with real-time digital queue tracking.
+            </h2>
+
+            <!-- Bottom Twin Feature Pills -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full" data-purpose="feature-pills-row">
+              
+              <!-- Pill 1: Queue Tracking -->
+              <div class="glass-pill text-white rounded-xl p-3.5 flex items-center gap-3.5 flex-1 border border-white/25">
+                <div class="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 6v6l4 2"></path>
+                  </svg>
+                </div>
+                <p class="text-[11px] sm:text-xs text-white/90 leading-snug font-normal">
+                  Live Queue Tokens &amp; Instant Slots — Skip crowded waiting rooms.
+                </p>
+              </div>
+
+              <!-- Pill 2: AI & Voice Assistance -->
+              <div class="glass-pill text-white rounded-xl p-3.5 flex items-center gap-3.5 flex-1 border border-white/25">
+                <div class="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center shrink-0 border border-white/20">
+                  <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                    <path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                </div>
+                <p class="text-[11px] sm:text-xs text-white/90 leading-snug font-normal">
+                  AI Doctor Match &amp; Voice Assistant available 24/7 in Hindi &amp; English.
+                </p>
+              </div>
+
+            </div>
+          </div>
+
+        </section>
+      </div>
+    </main>
+  </div>
+
+
+  <!-- SCREEN 2: HEALTH CONCERN & CHOOSE HOSPITAL -->
+  <div class="screen w-full py-8 px-4 sm:px-6 lg:px-8" id="screen2">
+    <div class="max-w-4xl mx-auto space-y-6">
+      
+      <div class="text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Step 2 of 4</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#101828] tracking-tight mt-1">Health Concern &amp; Hospital</h2>
+          <p class="text-sm text-[#475467] mt-1">Describe symptoms and select hospital<span class="active-patient-label-wrap"></span>.</p>
+        </div>
+        <button onclick="goToScreen(1)" class="text-xs font-medium text-[#475467] hover:text-[#101828] underline underline-offset-4 self-start sm:self-auto">
+          ← Back to Patient Info
+        </button>
+      </div>
+
+      <!-- Health Concern & Specialization Card (Shifted to Step 2) -->
+      <div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#E4E7EC] shadow-xs space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#344054] uppercase tracking-wider mb-1.5" for="problem">Health Concern / Symptoms *</label>
+          <textarea class="w-full px-3.5 py-2.5 text-sm text-[#101828] placeholder-[#667085] bg-slate-50/60 border border-[#D0D5DD] rounded-xl shadow-xs focus:ring-2 focus:ring-slate-900/10 focus:border-slate-900 transition-colors resize-none leading-relaxed" id="problem" placeholder="Describe symptoms (e.g. fever for 2 days, backache, skin rash, persistent headache...)" rows="3" required></textarea>
+        </div>
+
+        <div>
+          <span class="block text-xs font-semibold text-[#344054] uppercase tracking-wider mb-2.5">Specialization Needed</span>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs">
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="General Physician" checked onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">General Physician</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="Cardiologist" onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">Cardiologist</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="Dermatologist" onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">Dermatologist</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="Orthopedic" onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">Orthopedic</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="Pediatrician" onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">Pediatrician</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer select-none p-2.5 rounded-xl border border-[#E4E7EC] bg-white hover:bg-slate-50 transition-colors">
+              <input class="w-4 h-4 text-slate-900 border-[#D0D5DD] focus:ring-slate-900 spec-radio" name="specialty" type="radio" value="Neurologist" onchange="updateSpecFromCheckbox(this.value)"/>
+              <span class="text-[#344054] font-medium">Neurologist</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Choose Hospital Section -->
+      <div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#E4E7EC] shadow-xs space-y-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-[#344054] block">Available Hospitals *</span>
+          <p class="text-xs text-[#475467] mt-0.5">Select the hospital nearest to you or preferred for your doctor visit.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="hospitalGrid">
+          <!-- Hospital Cards Rendered by JS -->
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between gap-4 pt-4 border-t border-[#E4E7EC]">
+        <button onclick="goToScreen(1)" class="px-5 py-2.5 rounded-xl border border-[#D0D5DD] bg-white text-[#344054] text-sm font-medium hover:bg-slate-50 transition-colors">
+          ← Back to Patient Info
+        </button>
+        <button onclick="selectHospital()" class="px-6 py-2.5 rounded-xl bg-[#101828] hover:bg-black text-white text-sm font-medium shadow-sm transition-transform active:scale-[0.99] flex items-center gap-2">
+          <span>Continue to Select Doctor</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- SCREEN 3: DOCTOR SELECTION & SYMPTOMS -->
+  <div class="screen w-full py-8 px-4 sm:px-6 lg:px-8" id="screen3">
+    <div class="max-w-4xl mx-auto">
+      
+      <div class="mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Step 3 of 4</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#101828] tracking-tight mt-1">Select Your Specialist</h2>
+          <p class="text-sm text-[#475467] mt-1">Review doctors and availability<span class="active-patient-label-wrap"></span>.</p>
+        </div>
+        <button onclick="goToScreen(2)" class="text-xs font-medium text-[#475467] hover:text-[#101828] underline underline-offset-4 self-start sm:self-auto">
+          ← Back to Hospital
+        </button>
+      </div>
+
+      <!-- Health Concern Review & Filter -->
+      <div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#E4E7EC] shadow-xs mb-6">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+          <div class="flex-1">
+            <span class="text-xs font-semibold uppercase text-slate-400 block mb-1">Your Problem / Symptoms</span>
+            <p id="problemDisplay" class="text-sm font-medium text-[#101828] italic">No description provided yet.</p>
+          </div>
+          <div class="sm:w-64">
+            <label class="block text-xs font-semibold text-[#344054] mb-1">Filter by Specialization</label>
+            <select id="specFilter" onchange="filterDoctors()" class="w-full px-3 py-2 text-xs sm:text-sm text-[#101828] bg-slate-50 border border-[#D0D5DD] rounded-lg">
+              <option value="">All Specializations</option>
+              <option>General Physician</option>
+              <option>Cardiologist</option>
+              <option>Dermatologist</option>
+              <option>Orthopedic</option>
+              <option>Pediatrician</option>
+              <option>ENT Specialist</option>
+              <option>Neurologist</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctor Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="doctorGrid">
+        <!-- Doctors Rendered by JS -->
+      </div>
+
+      <div class="mt-8 flex items-center justify-between gap-4 pt-6 border-t border-[#E4E7EC]">
+        <button onclick="goToScreen(2)" class="px-5 py-2.5 rounded-xl border border-[#D0D5DD] bg-white text-[#344054] text-sm font-medium hover:bg-slate-50 transition-colors">
+          ← Back
+        </button>
+        <button onclick="selectDoctor()" class="px-6 py-2.5 rounded-xl bg-[#101828] hover:bg-black text-white text-sm font-medium shadow-sm transition-transform active:scale-[0.99] flex items-center gap-2">
+          <span>Continue to Book Slot</span>
+          <span>→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- SCREEN 4: TIME SLOT SELECTION -->
+  <div class="screen w-full py-8 px-4 sm:px-6 lg:px-8" id="screen4">
+    <div class="max-w-4xl mx-auto">
+      
+      <div class="mb-8 text-center sm:text-left flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Step 4 of 4</span>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#101828] tracking-tight mt-1">Pick a Date &amp; Time Slot</h2>
+          <p class="text-sm text-[#475467] mt-1">Select date and available consultation time<span class="active-patient-label-wrap"></span>.</p>
+        </div>
+        <button onclick="goToScreen(3)" class="text-xs font-medium text-[#475467] hover:text-[#101828] underline underline-offset-4 self-start sm:self-auto">
+          ← Back to Doctor
+        </button>
+      </div>
+
+      <!-- Booking Summary Bar -->
+      <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-5 mb-6 shadow-xs" id="apptSummary">
+        <!-- Filled dynamically -->
+      </div>
+
+      <div class="bg-white rounded-2xl p-6 border border-[#E4E7EC] shadow-xs space-y-6">
+        
+        <!-- Date Row -->
+        <div>
+          <span class="block text-xs font-semibold text-[#344054] uppercase tracking-wider mb-3">Select Date</span>
+          <div class="flex gap-2.5 overflow-x-auto pb-2 scrollbar-none" id="dateRow">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <hr class="border-[#E4E7EC]"/>
+
+        <!-- Morning Slots -->
+        <div>
+          <span class="block text-xs font-semibold text-[#344054] uppercase tracking-wider mb-3">Morning Slots (09:00 AM - 11:30 AM)</span>
+          <div class="grid grid-cols-3 sm:grid-cols-6 gap-2.5" id="slotsAM">
+            <!-- AM slots rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Afternoon Slots -->
+        <div>
+          <span class="block text-xs font-semibold text-[#344054] uppercase tracking-wider mb-3">Afternoon Slots (12:00 PM - 05:00 PM)</span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5" id="slotsPM">
+            <!-- PM slots rendered by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="mt-8 flex items-center justify-between gap-4 pt-6 border-t border-[#E4E7EC]">
+        <button onclick="goToScreen(3)" class="px-5 py-2.5 rounded-xl border border-[#D0D5DD] bg-white text-[#344054] text-sm font-medium hover:bg-slate-50 transition-colors">
+          ← Back
+        </button>
+        <button onclick="bookAppointment()" class="px-6 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-medium shadow-sm transition-transform active:scale-[0.99] flex items-center gap-2">
+          <span>✅ Confirm Appointment &amp; Token</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- SCREEN 5: MY APPOINTMENTS & LIVE TRACKING -->
+  <div class="screen w-full py-8 px-4 sm:px-6 lg:px-8" id="screen5">
+    <div class="max-w-4xl mx-auto">
+      
+      <!-- Success Banner -->
+      <div id="successBanner" class="hidden bg-emerald-50 border border-emerald-200 rounded-3xl p-6 sm:p-8 text-center mb-8 shadow-xs">
+        <div class="w-14 h-14 mx-auto rounded-full bg-emerald-100 text-emerald-800 text-2xl flex items-center justify-center mb-3">
+          🎉
+        </div>
+        <h2 class="text-2xl font-bold text-emerald-950 tracking-tight">Appointment Confirmed!</h2>
+        <p class="text-sm text-emerald-800 mt-1 max-w-md mx-auto">
+          Your digital queue token has been generated. We have dispatched a confirmation to your contact details.
+        </p>
+      </div>
+
+      <!-- Interactive Thermal Ticket Dispenser -->
+      <div id="ticketPrinterContainer" class="hidden flex flex-col items-center justify-center pt-8 pb-32 mb-10 bg-gradient-to-b from-slate-50/90 via-white to-slate-50/50 rounded-3xl border border-[#E4E7EC] shadow-xs relative overflow-visible">
+        <div class="text-center mb-8 px-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 mb-2 border border-emerald-200">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse"></span> Official Digital OPD Token
+          </span>
+          <h3 class="text-xl sm:text-2xl font-bold text-[#101828] tracking-tight">Patient Appointment Ticket Dispenser</h3>
+          <p class="text-xs text-[#475467] mt-1">Press the dispenser button <span class="font-semibold text-slate-900">🖨</span> to print and dispense your patient consultation pass.</p>
+        </div>
+
+        <div id="printerMount" class="w-full flex justify-center overflow-visible min-h-[500px]">
+          <!-- Dispenser and Receipt generated dynamically -->
+        </div>
+
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3 z-10 px-4">
+          <button type="button" onclick="triggerReceiptPrint()" class="px-4 py-2.5 rounded-xl bg-[#101828] hover:bg-black text-white text-xs font-medium transition-all flex items-center gap-2 shadow-xs cursor-pointer active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
+            <span>Print / Save Ticket (PDF)</span>
+          </button>
+          <button type="button" onclick="replayPrinterAnimation()" class="px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer active:scale-95">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+            <span>Re-dispense Ticket</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-2xl sm:text-3xl font-bold text-[#101828] tracking-tight">My Appointments &amp; Queue</h2>
+          <p class="text-sm text-[#475467] mt-0.5">Real-time status for your hospital visits.</p>
+        </div>
+        <button onclick="goToScreen(1)" class="px-4 py-2 rounded-xl bg-[#101828] text-white text-xs sm:text-sm font-medium hover:bg-black transition-colors flex items-center gap-1.5 shadow-xs">
+          <span>+ New Appointment</span>
+        </button>
+      </div>
+
+      <div class="space-y-4" id="apptList">
+        <!-- Rendered by JS -->
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- AI CHAT BUTTON -->
+  <button id="medi-chat-btn" title="Chat with SmartQueue AI Assistant">
+    <span class="chat-pulse"></span>
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+  </button>
+
+  <!-- AI CHAT PANEL -->
+  <div id="medi-chat-panel">
+    <div class="bg-[#101828] p-4 flex items-center gap-3 text-white">
+      <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center text-lg shrink-0">🩺</div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-semibold text-sm truncate">SmartQueue AI Assistant</h3>
+        <p class="text-xs text-slate-300 flex items-center gap-1.5 mt-0.5 truncate">
+          <span class="inline-flex items-center gap-1 text-emerald-400 shrink-0">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> 24/7
+          </span>
+          <span>·</span>
+          <span class="truncate">Patient: <strong class="text-white font-semibold" id="medi-chat-patient-name">Guest</strong></span>
+        </p>
+      </div>
+      <button class="ml-auto text-white/70 hover:text-white text-lg p-1 shrink-0" id="medi-chat-close">✕</button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-4 space-y-3 max-h-[380px] text-xs leading-relaxed" id="medi-chat-messages"></div>
+    <div class="p-2 px-3 flex flex-wrap gap-1.5 border-t border-slate-100" id="medi-quick-replies"></div>
+
+    <div class="p-3 border-t border-[#E4E7EC] flex gap-2 items-center bg-white">
+      <textarea id="medi-chat-input" rows="1" placeholder="Ask about symptoms, doctors, hospitals..." class="flex-1 border border-[#D0D5DD] rounded-xl px-3 py-2 text-xs resize-none focus:ring-1 focus:ring-[#101828] outline-none"></textarea>
+      
+      <!-- Mic Button inside Chatbot -->
+      <button id="medi-chat-mic" type="button" title="Speak to SmartQueue AI" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 flex items-center justify-center transition-colors shrink-0 relative cursor-pointer">
+        <svg id="medi-mic-icon" class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <path d="M12 15c1.66 0 3-1.34 3-3V6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm-1-9c0-.55.45-1 1-1s1 .45 1 1v6c0 .55-.45 1-1 1s-1-.45-1-1V6zm6 6c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-2.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+        </svg>
+        <span id="medi-mic-pulse" class="hidden absolute inset-0 rounded-lg bg-red-500/25 animate-ping pointer-events-none"></span>
+      </button>
+
+      <!-- Send Button -->
+      <button id="medi-chat-send" class="w-8 h-8 rounded-lg bg-[#101828] text-white flex items-center justify-center hover:bg-black transition-colors shrink-0 cursor-pointer">
+        <svg class="w-4 h-4 fill-white" viewBox="0 0 24 24"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+
+  <!-- APPLICATION JAVASCRIPT LOGIC -->
+  <script>
+    // ══════════════════════════════════════════════════════════════
+    //  BACKEND URL (Google Apps Script)
+    // ══════════════════════════════════════════════════════════════
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbwwnkhRldThKqxHIpsB1iOB2YaHSLC9A1JKwh0yGlx9p-YRJJAKLLcWSO0jluXcWitI/exec";
+
+
+    // ── DATA ──────────────────────────────────────────────────────
+    const HOSPITALS = [
+      { id: 1, name: "AIIMS Rishikesh", loc: "Rishikesh, Uttarakhand", badge: "Government", waitTime: "15 mins", rating: "4.8" },
+      { id: 2, name: "Shivalik Hospital", loc: "Haridwar, Uttarakhand", badge: "Private", waitTime: "10 mins", rating: "4.6" },
+      { id: 3, name: "Himalayan Institute", loc: "Dehradun, Uttarakhand", badge: "Multi-Specialty", waitTime: "25 mins", rating: "4.9" },
+      { id: 4, name: "Max Super Specialty", loc: "Saharanpur, UP", badge: "Private", waitTime: "20 mins", rating: "4.7" },
+      { id: 5, name: "Kailash Hospital", loc: "Roorkee, Uttarakhand", badge: "Private", waitTime: "10 mins", rating: "4.5" },
+      { id: 6, name: "Gangotri Medical", loc: "Haridwar, Uttarakhand", badge: "Clinic", waitTime: "5 mins", rating: "4.4" },
+      { id: 7, name: "Drishti Eye Centre", loc: "Rishikesh, Uttarakhand", badge: "Eye Specialist", waitTime: "15 mins", rating: "4.8" },
+      { id: 8, name: "Life Care Hospital", loc: "Muzaffarnagar, UP", badge: "General", waitTime: "20 mins", rating: "4.5" },
+    ];
+
+    const DOCTORS = [
+      { id: 1, name: "Dr. Priya Sharma", spec: "General Physician", avail: "Available Now", status: "green", emoji: "👩‍⚕️", exp: "12 yrs", email: "dr.priya.sharma@smartqueue.in" },
+      { id: 2, name: "Dr. Rohan Mehta", spec: "Cardiologist", avail: "Available in 20m", status: "yellow", emoji: "👨‍⚕️", exp: "15 yrs", email: "dr.rohan.mehta@smartqueue.in" },
+      { id: 3, name: "Dr. Anita Gupta", spec: "Dermatologist", avail: "Available Now", status: "green", emoji: "👩‍⚕️", exp: "9 yrs", email: "dr.anita.gupta@smartqueue.in" },
+      { id: 4, name: "Dr. Suresh Verma", spec: "Orthopedic", avail: "Available Now", status: "green", emoji: "👨‍⚕️", exp: "18 yrs", email: "dr.suresh.verma@smartqueue.in" },
+      { id: 5, name: "Dr. Kavita Nair", spec: "Pediatrician", avail: "Available in 30m", status: "yellow", emoji: "👩‍⚕️", exp: "11 yrs", email: "dr.kavita.nair@smartqueue.in" },
+      { id: 6, name: "Dr. Arun Tiwari", spec: "ENT Specialist", avail: "Available Now", status: "green", emoji: "👨‍⚕️", exp: "14 yrs", email: "dr.arun.tiwari@smartqueue.in" },
+      { id: 7, name: "Dr. Neha Singh", spec: "Neurologist", avail: "Available in 40m", status: "yellow", emoji: "👩‍⚕️", exp: "16 yrs", email: "dr.neha.singh@smartqueue.in" },
+      { id: 8, name: "Dr. Vikram Das", spec: "General Physician", avail: "Available Now", status: "green", emoji: "👨‍⚕️", exp: "8 yrs", email: "dr.vikram.das@smartqueue.in" },
+    ];
+
+    const AM_SLOTS = ["09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM"];
+    const PM_SLOTS = ["12:00 PM", "12:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "04:00 PM", "04:30 PM", "05:00 PM"];
+    const TAKEN = { "09:30 AM": true, "11:00 AM": true, "02:30 PM": true, "04:00 PM": true };
+
+    let state = {
+      patient: null,
+      hospital: null,
+      doctor: null,
+      problem: "",
+      specialty: "General Physician",
+      date: null,
+      slot: null,
+      appointments: [
+
+      ]
+    };
+
+    // ── PATIENT PROFILE & UI SYNCHRONIZATION ─────────────────────
+    function getActivePatient() {
+      if (state.patient && state.patient.fname) {
+        return state.patient;
+      }
+      const fnameInput = document.getElementById('fname');
+      const lnameInput = document.getElementById('lname');
+      if (fnameInput && fnameInput.value.trim()) {
+        return {
+          fname: fnameInput.value.trim(),
+          lname: (lnameInput && lnameInput.value.trim()) || '',
+          age: document.getElementById('age')?.value?.trim() || '28',
+          gender: document.getElementById('gender')?.value || 'Male',
+          phone: document.getElementById('phone')?.value?.trim() || '+91 98765 43210',
+          email: document.getElementById('email')?.value?.trim() || '',
+          blood: document.getElementById('blood')?.value || 'O+'
+        };
+      }
+      if (state.appointments && state.appointments.length > 0 && state.appointments[0].patient) {
+        return state.appointments[0].patient;
+      }
+      return { fname: '', lname: '', age: '', gender: '', phone: '' };
+    }
+
+    function syncPatientUI() {
+      const p = getActivePatient();
+      const fullName = [p.fname, p.lname].filter(Boolean).join(' ');
+
+      const navName = document.getElementById('navPatientName');
+      if (navName) navName.textContent = fullName ? `Patient: ${fullName}` : 'Patient';
+
+      const chatPatName = document.getElementById('medi-chat-patient-name');
+      if (chatPatName) chatPatName.textContent = fullName || 'Guest';
+
+      document.querySelectorAll('.active-patient-label').forEach(el => {
+        el.textContent = fullName;
+      });
+    }
+
+    // ── NAVIGATION ────────────────────────────────────────────────
+    function goToScreen(n, fromBooking = false) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+      const target = document.getElementById('screen' + n);
+      if (target) target.classList.add('visible');
+
+      syncPatientUI();
+
+      // Pattern switching: Step 0 & 1 keep Wave Pattern, Steps 2, 3, 4 show Bright Dot Pattern
+      const waves = document.getElementById('patternWaves');
+      const dots = document.getElementById('patternDots');
+      if (waves && dots) {
+        if (n === 0 || n === 1) {
+          waves.classList.remove('hidden');
+          dots.classList.add('hidden');
+        } else if (n >= 2 && n <= 4) {
+          waves.classList.add('hidden');
+          dots.classList.remove('hidden');
+        } else {
+          // Screen 5
+          waves.classList.add('hidden');
+          dots.classList.remove('hidden');
+        }
+      }
+
+      if (n === 5 && !fromBooking) {
+        renderAppointments(false);
+      }
+
+      const appNav = document.getElementById('appNav');
+      if (appNav) {
+        if (n === 0 || n === 1) {
+          appNav.classList.add('hidden');
+        } else {
+          appNav.classList.remove('hidden');
+        }
+      }
+
+      for (let i = 0; i <= 5; i++) {
+        const navBtn = document.getElementById('ns' + i);
+        if (navBtn) {
+          if (i === n) {
+            navBtn.className = "px-3.5 py-1.5 rounded-full transition-all bg-white text-[#101828] shadow-xs font-semibold";
+          } else {
+            navBtn.className = "px-3.5 py-1.5 rounded-full transition-all hover:text-[#101828]";
+          }
+        }
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ── LANDING PAGE INTERACTIVE HELPERS ─────────────────────────
+    let simCurrentToken = 1042;
+    function simNextToken() {
+      simCurrentToken++;
+      const el = document.getElementById('simCurrentTokenNum');
+      if (el) {
+        el.textContent = '#SQ-' + simCurrentToken;
+        el.classList.add('scale-110', 'text-emerald-300');
+        setTimeout(() => el.classList.remove('scale-110', 'text-emerald-300'), 350);
+      }
+      const next1 = document.getElementById('simNextTokenNum');
+      if (next1) next1.textContent = '#SQ-' + (simCurrentToken + 1);
+      const next2 = document.getElementById('simNextTokenNum2');
+      if (next2) next2.textContent = '#SQ-' + (simCurrentToken + 2);
+      const next3 = document.getElementById('simNextTokenNum3');
+      if (next3) next3.textContent = '#SQ-' + (simCurrentToken + 3);
+    }
+
+    function bookWithHospital(hospId) {
+      state.hospital = HOSPITALS.find(h => h.id === hospId);
+      goToScreen(1);
+    }
+
+    function bookWithDoctor(docId) {
+      const doc = DOCTORS.find(d => d.id === docId);
+      if (doc) {
+        state.doctor = doc;
+        state.specialty = doc.spec;
+        const specSelect = document.getElementById('specFilter');
+        if (specSelect) specSelect.value = doc.spec;
+      }
+      goToScreen(1);
+    }
+
+    function updateSpecFromCheckbox(val) {
+      state.specialty = val;
+      const specSelect = document.getElementById('specFilter');
+      if (specSelect) specSelect.value = val;
+    }
+
+    // ── SCREEN 1: INTAKE ──────────────────────────────────────────
+    function registerPatient() {
+      const fname = document.getElementById('fname').value.trim();
+      const lname = document.getElementById('lname').value.trim();
+      const age = document.getElementById('age').value.trim();
+      const gender = document.getElementById('gender').value;
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!fname || !lname || !age || !gender || !phone) {
+        alert("Please complete all required fields (Name, Age, Gender, Phone).");
+        return;
+      }
+
+      state.patient = {
+        fname, lname, age, gender, phone,
+        email: document.getElementById('email').value.trim(),
+        blood: document.getElementById('blood').value
+      };
+
+      syncPatientUI();
+      renderHospitals();
+      goToScreen(2);
+    }
+
+    // ── SCREEN 2: HOSPITALS ───────────────────────────────────────
+    function renderHospitals() {
+      const grid = document.getElementById('hospitalGrid');
+      grid.innerHTML = HOSPITALS.map(h => {
+        const isSelected = state.hospital?.id === h.id;
+        return `
+          <div onclick="pickHospital(${h.id})" class="cursor-pointer rounded-2xl p-5 border transition-all duration-200 bg-white ${
+            isSelected ? 'border-[#101828] ring-2 ring-[#101828]/10 shadow-md bg-slate-50/50' : 'border-[#E4E7EC] hover:border-slate-400 hover:shadow-xs'
+          }">
+            <div class="flex items-start justify-between gap-2">
+              <div>
+                <span class="text-[11px] font-semibold tracking-wide uppercase px-2 py-0.5 rounded-md ${
+                  h.badge === 'Government' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-blue-50 text-blue-800 border border-blue-200'
+                }">${h.badge}</span>
+                <h3 class="font-bold text-base text-[#101828] mt-2">🏥 ${h.name}</h3>
+                <p class="text-xs text-[#475467] mt-1 flex items-center gap-1">
+                  <span>📍</span> ${h.loc}
+                </p>
+              </div>
+              <div class="text-right">
+                <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">Wait: ${h.waitTime}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function pickHospital(id) {
+      state.hospital = HOSPITALS.find(h => h.id === id);
+      renderHospitals();
+    }
+
+    function selectHospital() {
+      const problemInput = document.getElementById('problem');
+      const problem = problemInput ? problemInput.value.trim() : "";
+      if (!problem) {
+        alert("Please describe your health concern or symptoms.");
+        if (problemInput) problemInput.focus();
+        return;
+      }
+      if (!state.hospital) {
+        alert("Please select a hospital to proceed.");
+        return;
+      }
+
+      state.problem = problem;
+      const problemDisplay = document.getElementById('problemDisplay');
+      if (problemDisplay) problemDisplay.textContent = problem;
+
+      renderDoctors(state.specialty);
+      goToScreen(3);
+    }
+
+    // ── SCREEN 3: DOCTORS ─────────────────────────────────────────
+    function renderDoctors(filter = "") {
+      const docs = filter ? DOCTORS.filter(d => d.spec === filter) : DOCTORS;
+      const grid = document.getElementById('doctorGrid');
+
+      if (docs.length === 0) {
+        grid.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-500 text-sm">No doctors found for this filter. Please choose another specialization.</div>`;
+        return;
+      }
+
+      grid.innerHTML = docs.map(d => {
+        const isSelected = state.doctor?.id === d.id;
+        return `
+          <div onclick="pickDoctor(${d.id})" class="cursor-pointer rounded-2xl p-5 border transition-all duration-200 bg-white flex items-start gap-4 ${
+            isSelected ? 'border-[#101828] ring-2 ring-[#101828]/10 shadow-md bg-slate-50/50' : 'border-[#E4E7EC] hover:border-slate-400 hover:shadow-xs'
+          }">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center text-2xl shrink-0">
+              ${d.emoji}
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1">
+                <h4 class="font-bold text-sm text-[#101828] truncate">${d.name}</h4>
+                <span class="text-[11px] text-slate-500 font-medium">${d.exp}</span>
+              </div>
+              <p class="text-xs text-[#475467] mt-0.5">${d.spec}</p>
+              <div class="mt-2 flex items-center gap-1.5 text-xs">
+                <span class="w-2 h-2 rounded-full ${d.status === 'green' ? 'bg-emerald-500' : 'bg-amber-500'}"></span>
+                <span class="${d.status === 'green' ? 'text-emerald-700' : 'text-amber-700'} font-medium text-[11px]">${d.avail}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function filterDoctors() {
+      const spec = document.getElementById('specFilter').value;
+      state.specialty = spec;
+      renderDoctors(spec);
+    }
+
+    function pickDoctor(id) {
+      state.doctor = DOCTORS.find(d => d.id === id);
+      renderDoctors(document.getElementById('specFilter').value);
+    }
+
+    function selectDoctor() {
+      if (!state.doctor) {
+        alert("Please select a doctor to proceed.");
+        return;
+      }
+      renderSlotScreen();
+      goToScreen(4);
+    }
+
+    // ── SCREEN 4: TIME SLOTS ──────────────────────────────────────
+    function renderSlotScreen() {
+      const p = getActivePatient();
+      const hosp = state.hospital || HOSPITALS[0];
+      const doc = state.doctor || DOCTORS[0];
+
+      document.getElementById('apptSummary').innerHTML = `
+        <div class="flex flex-wrap items-center justify-between gap-4 text-xs">
+          <div>
+            <span class="text-slate-500 uppercase tracking-wide block text-[10px]">Patient</span>
+            <span class="font-bold text-slate-900">${p.fname} ${p.lname} (${p.age || '28'}y, ${p.gender || 'Male'})</span>
+          </div>
+          <div>
+            <span class="text-slate-500 uppercase tracking-wide block text-[10px]">Hospital</span>
+            <span class="font-bold text-slate-900">${hosp.name}</span>
+          </div>
+          <div>
+            <span class="text-slate-500 uppercase tracking-wide block text-[10px]">Specialist</span>
+            <span class="font-bold text-slate-900">${doc.name} (${doc.spec})</span>
+          </div>
+        </div>
+      `;
+
+      const dateRow = document.getElementById('dateRow');
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      dateRow.innerHTML = '';
+
+      for (let i = 0; i < 7; i++) {
+        const d = new Date();
+        d.setDate(d.getDate() + i);
+        const iso = d.toISOString().split('T')[0];
+
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `flex flex-col items-center justify-center min-w-[76px] py-2.5 px-3 rounded-xl border text-xs font-medium transition-colors shrink-0 ${
+          i === 0 ? 'bg-[#101828] text-white border-[#101828]' : 'bg-white text-[#344054] border-[#D0D5DD] hover:border-slate-400'
+        }`;
+        btn.innerHTML = `<span class="text-[10px] opacity-80 uppercase">${days[d.getDay()]}</span><span class="text-sm font-bold mt-0.5">${d.getDate()}</span><span class="text-[10px] opacity-75">${months[d.getMonth()]}</span>`;
+
+        btn.onclick = () => {
+          state.date = iso;
+          dateRow.querySelectorAll('button').forEach(b => {
+            b.className = 'flex flex-col items-center justify-center min-w-[76px] py-2.5 px-3 rounded-xl border text-xs font-medium transition-colors shrink-0 bg-white text-[#344054] border-[#D0D5DD] hover:border-slate-400';
+          });
+          btn.className = 'flex flex-col items-center justify-center min-w-[76px] py-2.5 px-3 rounded-xl border text-xs font-medium transition-colors shrink-0 bg-[#101828] text-white border-[#101828]';
+        };
+
+        if (i === 0) state.date = iso;
+        dateRow.appendChild(btn);
+      }
+
+      renderSlots('slotsAM', AM_SLOTS);
+      renderSlots('slotsPM', PM_SLOTS);
+    }
+
+    function renderSlots(gridId, slots) {
+      document.getElementById(gridId).innerHTML = slots.map(s => {
+        const isTaken = !!TAKEN[s];
+        const isSelected = state.slot === s;
+        if (isTaken) {
+          return `<button disabled class="py-2.5 px-3 rounded-xl border border-slate-200 bg-slate-100 text-slate-400 text-xs font-medium line-through cursor-not-allowed text-center">${s} 🚫</button>`;
+        }
+        return `
+          <button type="button" onclick="pickSlot('${s}')" class="py-2.5 px-3 rounded-xl border text-xs font-medium text-center transition-all ${
+            isSelected ? 'bg-[#101828] text-white border-[#101828] shadow-xs' : 'bg-white text-[#344054] border-[#D0D5DD] hover:border-slate-900 hover:bg-slate-50'
+          }">${s}</button>
+        `;
+      }).join('');
+    }
+
+    function pickSlot(s) {
+      state.slot = s;
+      renderSlots('slotsAM', AM_SLOTS);
+      renderSlots('slotsPM', PM_SLOTS);
+    }
+
+    function bookAppointment() {
+      if (!state.slot) {
+        alert("Please pick an available time slot.");
+        return;
+      }
+
+      const bookingToken = "SQ-" + Math.floor(100000 + Math.random() * 900000);
+      const appt = {
+        id: Date.now(),
+        bookingId: bookingToken,
+        patient: { ...state.patient },
+        hospital: { ...state.hospital },
+        doctor: { ...state.doctor },
+        problem: state.problem,
+        date: state.date,
+        slot: state.slot,
+        status: "Confirmed",
+        booked: new Date().toLocaleDateString('en-IN')
+      };
+
+      state.appointments.unshift(appt);
+
+      // Send to Google Apps Script backend (original)
+      fetch(BACKEND_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
+        body: JSON.stringify({
+          bookingId: bookingToken,
+          firstName: state.patient.fname,
+          lastName: state.patient.lname,
+          age: state.patient.age,
+          gender: state.patient.gender,
+          phone: state.patient.phone,
+          email: state.patient.email || "",
+          bloodGroup: state.patient.blood || "",
+          hospital: state.hospital.name,
+          doctor: state.doctor.name,
+          specialization: state.doctor.spec,
+          concern: state.problem,
+          date: state.date,
+          timeSlot: state.slot
+        })
+      }).catch(() => {});
+
+      // Send confirmation emails via server (patient email + doctor Excel)
+      const patientName = [state.patient.fname, state.patient.lname].filter(Boolean).join(' ');
+      const patientEmail = state.patient.email || '';
+      const doctorEmail = state.doctor.email || '';
+
+      if (patientEmail || doctorEmail) {
+        fetch('/api/send-confirmation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            patientName,
+            patientEmail,
+            patientPhone: state.patient.phone || '',
+            doctorEmail,
+            doctor: state.doctor.name,
+            hospital: state.hospital.name,
+            date: state.date,
+            time: state.slot,
+            bookingId: bookingToken,
+            concern: state.problem || 'General Consultation'
+          })
+        }).then(r => r.json()).then(data => {
+          if (data.success) {
+            console.log('[SmartQueue] ✅ Confirmation emails sent successfully');
+          } else {
+            console.warn('[SmartQueue] ⚠️ Email sending issue:', data.error);
+          }
+        }).catch(err => {
+          console.warn('[SmartQueue] Email sending failed (server may be offline):', err.message);
+        });
+      }
+
+      renderAppointments(true);
+      goToScreen(5, true);
+      state.slot = null;
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  THERMAL RECEIPT TICKET PRINTER LOGIC
+    // ══════════════════════════════════════════════════════════════
+    function renderPrinterTicket(appt) {
+      const mount = document.getElementById('printerMount');
+      if (!mount || !appt) return;
+
+      mount.innerHTML = `
+        <div class="wrapper" id="ticketWrapper">
+          <div class="printer"></div>
+
+          <div class="printer-display">
+            <span class="printer-message"> Click to print</span>
+            <div class="letter-wrapper">
+              <span class="letter">P</span>
+              <span class="letter">r</span>
+              <span class="letter">i</span>
+              <span class="letter">n</span>
+              <span class="letter">t</span>
+              <span class="letter">i</span>
+              <span class="letter">n</span>
+              <span class="letter">g</span>
+              <span class="letter">.</span>
+              <span class="letter">.</span>
+              <span class="letter">.</span>
+            </div>
+          </div>
+
+          <button class="print-button" id="dispenserPrintBtn" type="button" title="Click to dispense ticket" onclick="replayPrinterAnimation()">🖨</button>
+
+          <div class="receipt-wrapper">
+            <div class="receipt" id="printableReceipt">
+              <div class="receipt-header">
+                <div>
+                  <div style="font-weight:700;font-size:1.1em;color:#101828;">${appt.hospital.name}</div>
+                  <div style="font-size:0.9em;color:#475467;">${appt.hospital.loc}</div>
+                  <div style="font-size:0.8em;color:#667085;text-transform:uppercase;letter-spacing:0.5px;">OPD Token Desk</div>
+                </div>
+                <div class="logo">🏥</div>
+              </div>
+
+              <div class="receipt-subheader">
+                <div style="font-weight:700;letter-spacing:0.5px;color:#101828;">TOKEN NO. #${appt.bookingId}</div>
+                <div style="font-size:0.9em;color:#475467;">${appt.date} · ${appt.slot}</div>
+              </div>
+
+              <table class="receipt-table">
+                <tbody>
+                  <tr>
+                    <th colspan="2" style="font-size:1em;padding-bottom:5px;">PATIENT CONSULTATION PASS</th>
+                  </tr>
+                  <tr>
+                    <td style="color:#667085;">Patient:</td>
+                    <td style="font-weight:700;color:#101828;">${appt.patient.fname} ${appt.patient.lname}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#667085;">Age / Gender:</td>
+                    <td>${appt.patient.age || '—'} yrs · ${appt.patient.gender || '—'}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#667085;">Contact:</td>
+                    <td>${appt.patient.phone}</td>
+                  </tr>
+                  ${appt.patient.blood ? `<tr><td style="color:#667085;">Blood Group:</td><td>${appt.patient.blood}</td></tr>` : ''}
+                  <tr>
+                    <td style="color:#667085;">Doctor:</td>
+                    <td style="font-weight:700;color:#101828;">${appt.doctor.name}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#667085;">Specialty:</td>
+                    <td>${appt.doctor.spec}</td>
+                  </tr>
+                  <tr>
+                    <td style="color:#667085;">Concern:</td>
+                    <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${appt.problem || 'General Consultation'}</td>
+                  </tr>
+                  <tr class="receipt-subtotal">
+                    <td style="color:#667085;">Desk Counter:</td>
+                    <td style="font-weight:600;">Counter #3 (OPD)</td>
+                  </tr>
+                  <tr class="receipt-tax">
+                    <td style="color:#667085;">Token Fee:</td>
+                    <td style="font-weight:600;">₹0.00 (Free Token)</td>
+                  </tr>
+                  <tr class="receipt-total">
+                    <td style="color:#667085;">Queue Status:</td>
+                    <td style="color:#047857;font-weight:700;">CONFIRMED &amp; ACTIVE</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="receipt-message">
+                <div>
+                  <strong>Please report to OPD Counter 10 mins before slot.</strong><br />
+                  Wishing you a speedy recovery! · SmartQueue
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function replayPrinterAnimation() {
+      const wrapper = document.getElementById('ticketWrapper');
+      const btn = document.getElementById('dispenserPrintBtn');
+      if (!wrapper) return;
+      wrapper.classList.remove('is-printed');
+      void wrapper.offsetWidth;
+      wrapper.classList.add('is-printed');
+      if (btn) btn.focus();
+    }
+
+    function triggerReceiptPrint() {
+      window.print();
+    }
+
+    function loadAndPrintAppt(bookingId) {
+      const appt = state.appointments.find(a => a.bookingId === bookingId) || state.appointments[0];
+      if (!appt) return;
+      renderPrinterTicket(appt);
+      const container = document.getElementById('ticketPrinterContainer');
+      if (container) {
+        container.classList.remove('hidden');
+        container.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      setTimeout(() => {
+        replayPrinterAnimation();
+      }, 350);
+    }
+
+    // ── SCREEN 5: APPOINTMENTS ────────────────────────────────────
+    function renderAppointments(justBooked = false) {
+      document.getElementById('successBanner').style.display = justBooked ? 'block' : 'none';
+      const printerSection = document.getElementById('ticketPrinterContainer');
+      const list = document.getElementById('apptList');
+
+      if (!state.appointments.length) {
+        if (printerSection) printerSection.classList.add('hidden');
+        list.innerHTML = `
+          <div class="bg-white rounded-2xl p-12 text-center border border-[#E4E7EC]">
+            <div class="text-4xl mb-2">📅</div>
+            <h3 class="font-bold text-slate-800 text-base">No appointments booked yet</h3>
+            <p class="text-xs text-slate-500 mt-1">Book your first doctor consultation to generate a digital queue token.</p>
+            <button onclick="goToScreen(1)" class="mt-4 px-4 py-2 bg-[#101828] text-white text-xs rounded-xl">Book Appointment</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Show and render printer ticket for the latest appointment
+      if (printerSection) {
+        printerSection.classList.remove('hidden');
+        renderPrinterTicket(state.appointments[0]);
+        if (justBooked) {
+          setTimeout(() => {
+            replayPrinterAnimation();
+          }, 450);
+        }
+      }
+
+      list.innerHTML = state.appointments.map(a => {
+        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.hospital.name + ', ' + a.hospital.loc)}`;
+        return `
+          <div class="bg-white rounded-2xl p-5 sm:p-6 border border-[#E4E7EC] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200">Token: ${a.bookingId}</span>
+                <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Live Queue Active
+                </span>
+              </div>
+              <h3 class="text-base font-bold text-[#101828]">${a.doctor.emoji} ${a.doctor.name} · <span class="font-normal text-xs text-slate-600">${a.doctor.spec}</span></h3>
+              <p class="text-xs text-slate-600 mt-1">🏥 ${a.hospital.name} · 📍 ${a.hospital.loc}</p>
+              <p class="text-xs font-medium text-slate-900 mt-1">📅 ${a.date} · ⏰ ${a.slot}</p>
+              <div class="mt-3 flex flex-wrap items-center gap-3">
+                <a href="${mapUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 underline">
+                  <span>🗺️ Google Maps</span>
+                </a>
+                <button onclick="loadAndPrintAppt('${a.bookingId}')" class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors border border-slate-200 cursor-pointer">
+                  <span>🖨️ View &amp; Print Ticket</span>
+                </button>
+              </div>
+            </div>
+            <div class="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+              <span class="text-[11px] text-slate-400 block">Queue Status</span>
+              <span class="text-xs font-bold text-emerald-600">Expected on-time</span>
+              <span class="text-[11px] text-slate-400 block mt-2">Booked for</span>
+              <span class="text-xs font-semibold text-slate-700">${a.patient.fname} ${a.patient.lname}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ── AI CHAT WIDGET ────────────────────────────────────────────
+    (function () {
+      const SYSTEM = `You are SmartQueue Assistant — a warm, knowledgeable AI for the SmartQueue appointment platform serving hospitals in Uttarakhand and UP, India.
+You help users with booking, doctor specialization matching, queue navigation, and hospital directions.
+Be concise, warm and helpful. Support Hindi or English.`;
+
+      const QUICK_INIT = ["Check my name & token", "Which doctor for fever?", "Hospital in Dehradun", "Queue wait times"];
+      let isOpen = false, isLoading = false;
+      const chatHistory = [];
+
+      const btn = document.getElementById('medi-chat-btn');
+      const panel = document.getElementById('medi-chat-panel');
+      const closeBtn = document.getElementById('medi-chat-close');
+      const msgsEl = document.getElementById('medi-chat-messages');
+      const inputEl = document.getElementById('medi-chat-input');
+      const sendEl = document.getElementById('medi-chat-send');
+      const qrEl = document.getElementById('medi-quick-replies');
+
+      btn.addEventListener('click', () => {
+        isOpen = !isOpen;
+        panel.classList.toggle('open', isOpen);
+        syncPatientUI();
+        if (isOpen && chatHistory.length === 0) greet();
+        if (isOpen) setTimeout(() => inputEl.focus(), 300);
+      });
+
+      closeBtn.addEventListener('click', () => {
+        isOpen = false;
+        panel.classList.remove('open');
+      });
+
+      function greet() {
+        const p = getActivePatient();
+        const pName = [p.fname, p.lname].filter(Boolean).join(' ');
+        const greeting = pName
+          ? `Hello ${p.fname || pName}! 👋 I'm your SmartQueue Assistant. I can help you pick the right specialist, check hospital timings, or navigate queue tokens. How can I help you today?`
+          : `Hello Sir/Madam! 👋 I'm your SmartQueue Assistant. I can help you pick the right specialist, check hospital timings, or navigate queue tokens. How can I help you today?`;
+        addMsg('bot', greeting);
+        showQR(QUICK_INIT);
+      }
+
+      function showQR(items) {
+        qrEl.innerHTML = '';
+        items.forEach(t => {
+          const b = document.createElement('button');
+          b.className = 'text-[11px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-full border border-slate-200 hover:bg-slate-200';
+          b.textContent = t;
+          b.onclick = () => { qrEl.innerHTML = ''; send(t); };
+          qrEl.appendChild(b);
+        });
+      }
+
+      let lastUserQuery = "";
+
+      function createActionBtn(svgHtml, label, onClick) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.title = label;
+        b.setAttribute('aria-label', label);
+        b.className = "inline-flex items-center justify-center p-1 text-slate-400 hover:text-slate-700 hover:bg-slate-200/70 rounded transition-colors cursor-pointer";
+        b.innerHTML = svgHtml;
+        b.onclick = (e) => onClick(e, b);
+        return b;
+      }
+
+      function formatAiText(text) {
+        if (!text) return '';
+        // Temporarily protect allowed HTML tags (strong, em, b, i, br)
+        const safeTags = [];
+        let safeText = text.replace(/<(\/?)(?:strong|em|b|i|br)(\s[^>]*)?\/?>|<br\s*\/?>/gi, (match) => {
+          safeTags.push(match);
+          return `__SAFE_TAG_${safeTags.length - 1}__`;
+        });
+        // Escape remaining HTML
+        safeText = safeText
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;');
+        // Convert markdown bold/italic
+        safeText = safeText
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.*?)\*/g, '<em>$1</em>')
+          .replace(/\n/g, '<br>');
+        // Restore protected tags
+        safeText = safeText.replace(/__SAFE_TAG_(\d+)__/g, (_, idx) => safeTags[parseInt(idx)]);
+        return safeText;
+      }
+
+      function addMsg(role, text, provider) {
+        const isBot = role === 'bot';
+        const msgContainer = document.createElement('div');
+        msgContainer.className = `flex flex-col gap-1.5 w-full ${isBot ? 'items-start' : 'items-end'}`;
+
+        // Top avatar row
+        const metaRow = document.createElement('div');
+        metaRow.className = `flex items-center gap-2 mb-0.5 ${isBot ? 'flex-row' : 'flex-row-reverse'}`;
+
+        const avatarImg = document.createElement('img');
+        avatarImg.className = "w-6 h-6 rounded-full object-cover border border-slate-200 shadow-2xs";
+        if (isBot) {
+          avatarImg.src = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=120&auto=format&fit=crop&q=80";
+          avatarImg.alt = "SmartQueue AI";
+        } else {
+          avatarImg.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80";
+          avatarImg.alt = "Patient";
+        }
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = "text-[11px] font-medium text-slate-500 flex items-center gap-1.5";
+        if (isBot) {
+          nameSpan.textContent = 'SmartQueue AI';
+        } else {
+          const p = getActivePatient();
+          const pName = [p.fname, p.lname].filter(Boolean).join(' ') || 'Patient';
+          nameSpan.innerHTML = `👤 <span class="font-semibold text-slate-700">${pName}</span> <span class="text-[10px] text-slate-400">(You)</span>`;
+        }
+
+        metaRow.appendChild(avatarImg);
+        metaRow.appendChild(nameSpan);
+        msgContainer.appendChild(metaRow);
+
+        // Message content bubble
+        const bubble = document.createElement('div');
+        bubble.className = `p-3 rounded-2xl max-w-[88%] text-xs leading-relaxed shadow-xs ${
+          isBot
+            ? 'bg-slate-100 text-slate-800 rounded-tl-xs border border-slate-200'
+            : 'bg-[#101828] text-white rounded-tr-xs'
+        }`;
+        bubble.innerHTML = isBot ? formatAiText(text) : text.replace(/\n/g, '<br>');
+        msgContainer.appendChild(bubble);
+
+        // If bot, add interactive action buttons (Retry, Like, Dislike, Copy, Share)
+        if (isBot) {
+          const actionsRow = document.createElement('div');
+          actionsRow.className = "flex items-center gap-0.5 mt-1 text-slate-400 pl-1";
+
+          // Retry
+          const retryBtn = createActionBtn(
+            `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>`,
+            "Retry",
+            () => {
+              if (lastUserQuery) send(lastUserQuery);
+            }
+          );
+
+          // Like
+          const likeBtn = createActionBtn(
+            `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h3"/><path d="M7 10V4a2 2 0 0 1 2-2h.5a2 2 0 0 1 2 2v6"/></svg>`,
+            "Like",
+            (e, btn) => {
+              btn.classList.toggle('text-emerald-600');
+            }
+          );
+
+          // Dislike
+          const dislikeBtn = createActionBtn(
+            `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3"/><path d="M17 14v6a2 2 0 0 1-2 2h-.5a2 2 0 0 1-2-2v-6"/></svg>`,
+            "Dislike",
+            (e, btn) => {
+              btn.classList.toggle('text-rose-600');
+            }
+          );
+
+          // Copy
+          const copyBtn = createActionBtn(
+            `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`,
+            "Copy",
+            (e, btn) => {
+              navigator.clipboard.writeText(text);
+              const orig = btn.innerHTML;
+              btn.innerHTML = `<svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>`;
+              setTimeout(() => { btn.innerHTML = orig; }, 1500);
+            }
+          );
+
+          // Share
+          const shareBtn = createActionBtn(
+            `<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>`,
+            "Share",
+            (e, btn) => {
+              if (navigator.share) {
+                navigator.share({ title: 'SmartQueue AI Advice', text });
+              } else {
+                navigator.clipboard.writeText(text);
+                btn.classList.add('text-blue-600');
+                setTimeout(() => btn.classList.remove('text-blue-600'), 1500);
+              }
+            }
+          );
+
+          actionsRow.appendChild(retryBtn);
+          actionsRow.appendChild(likeBtn);
+          actionsRow.appendChild(dislikeBtn);
+          actionsRow.appendChild(copyBtn);
+          actionsRow.appendChild(shareBtn);
+          msgContainer.appendChild(actionsRow);
+        }
+
+        msgsEl.appendChild(msgContainer);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+      }
+
+      async function send(text) {
+        if (!text.trim() || isLoading) return;
+        isLoading = true;
+        qrEl.innerHTML = '';
+        const userQuery = text.trim();
+        lastUserQuery = userQuery;
+        addMsg('user', userQuery);
+        chatHistory.push({ role: 'user', parts: [{ text: userQuery }] });
+        inputEl.value = '';
+
+        const typing = document.createElement('div');
+        typing.className = 'text-slate-400 italic text-[11px] pl-2 flex items-center gap-1.5';
+        typing.innerHTML = `<span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span> SmartQueue AI is thinking...`;
+        msgsEl.appendChild(typing);
+        msgsEl.scrollTop = msgsEl.scrollHeight;
+
+        // Collect live patient state from SmartQueue app
+        const activePat = getActivePatient();
+        const patientContext = {
+          patient: activePat,
+          hospital: state.hospital || (state.appointments[0]?.hospital) || null,
+          doctor: state.doctor || (state.appointments[0]?.doctor) || null,
+          problem: state.problem || (state.appointments[0]?.problem) || '',
+          selectedDate: state.date || (state.appointments[0]?.date) || null,
+          selectedSlot: state.slot || (state.appointments[0]?.slot) || null,
+          latestToken: state.appointments[0]?.bookingId || 'SQ-592814',
+          appointmentsCount: state.appointments.length
+        };
+
+        const payload = JSON.stringify({
+          message: userQuery,
+          history: chatHistory,
+          patientContext: patientContext
+        });
+
+        // Try local server endpoint first, then direct localhost:8080 fallback
+        const endpoints = ['/api/chat', 'http://localhost:8080/api/chat', 'http://127.0.0.1:8080/api/chat'];
+        let result = null;
+
+        for (const ep of endpoints) {
+          try {
+            const res = await fetch(ep, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: payload
+            });
+            if (res.ok) {
+              const data = await res.json();
+              if (data && data.reply) {
+                result = data;
+                break;
+              }
+            }
+          } catch (e) {
+            // Try next endpoint
+          }
+        }
+
+        typing.remove();
+
+        if (result && result.reply) {
+          addMsg('bot', result.reply, result.provider);
+          chatHistory.push({ role: 'model', parts: [{ text: result.reply }] });
+        } else {
+          addMsg('bot', "Could not reach the SmartQueue AI service. Please make sure the server is started with 'npm start' on port 8080.");
+        }
+        isLoading = false;
+      }
+
+      // Voice input via chatbot mic
+      const micBtn = document.getElementById('medi-chat-mic');
+      const micPulse = document.getElementById('medi-mic-pulse');
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition = null;
+      let isListening = false;
+
+      function stopMic() {
+        isListening = false;
+        if (micBtn) {
+          micBtn.classList.remove('bg-red-50', 'text-red-600', 'border-red-300');
+          micBtn.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+        }
+        if (micPulse) micPulse.classList.add('hidden');
+        inputEl.placeholder = "Ask about symptoms, doctors, hospitals...";
+      }
+
+      if (SpeechRecognition) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+
+        recognition.onstart = () => {
+          isListening = true;
+          micBtn.classList.add('bg-red-50', 'text-red-600', 'border-red-300');
+          micBtn.classList.remove('bg-slate-100', 'text-slate-600', 'border-slate-200');
+          if (micPulse) micPulse.classList.remove('hidden');
+          inputEl.placeholder = "🎙️ Listening... Speak now";
+        };
+
+        recognition.onresult = (e) => {
+          const transcript = e.results[0][0].transcript.trim();
+          if (transcript) {
+            inputEl.value = transcript;
+            send(transcript);
+          }
+        };
+
+        recognition.onerror = () => stopMic();
+        recognition.onend = () => stopMic();
+
+        if (micBtn) {
+          micBtn.addEventListener('click', () => {
+            if (isListening) {
+              recognition.stop();
+              stopMic();
+            } else {
+              try {
+                recognition.start();
+              } catch (err) {
+                recognition.stop();
+                setTimeout(() => recognition.start(), 150);
+              }
+            }
+          });
+        }
+      } else if (micBtn) {
+        micBtn.onclick = () => {
+          alert("Speech recognition is not supported in this browser. Please try Chrome.");
+        };
+      }
+
+      sendEl.addEventListener('click', () => send(inputEl.value));
+      inputEl.addEventListener('keydown', e => {
+        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(inputEl.value); }
+      });
+
+      // Real-time synchronization when patient types name
+      document.getElementById('fname')?.addEventListener('input', syncPatientUI);
+      document.getElementById('lname')?.addEventListener('input', syncPatientUI);
+      syncPatientUI();
+    })();
+  </script>
+</body>
+</html>
