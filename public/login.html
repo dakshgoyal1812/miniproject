@@ -577,7 +577,11 @@
         });
 
         if (error) {
-          showError(error.message || 'Invalid login credentials.');
+          let msg = error.message || 'Invalid login credentials.';
+          if (msg.toLowerCase().includes('invalid login credentials')) {
+            msg = 'Invalid login credentials. If you just signed up, please verify your email address in your inbox first (or disable "Confirm email" in Supabase Dashboard &rarr; Auth &rarr; Providers &rarr; Email).';
+          }
+          showError(msg);
           submitBtn.disabled = false;
           submitBtn.textContent = 'Sign In';
           return;
