@@ -11,7 +11,7 @@
   // 1. Supabase Project Credentials
   // Replace SUPABASE_URL with your actual project URL from your Supabase Dashboard:
   // Dashboard -> Project Settings -> API -> Project URL (e.g., https://xyzcompany.supabase.co)
-  const DEFAULT_SUPABASE_URL = "https://gyxgzycjmrenggwofmpj.supabase.co";
+  const DEFAULT_SUPABASE_URL = "https://mtcjvblcwdntyqjaedzz.supabase.co";
   const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_mOQWxXYa2T3XcA07g6orbw_ofxr_M88";
 
   // Allow dynamic override from localStorage or window if updated via UI
