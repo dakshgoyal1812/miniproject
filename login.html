@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover"/>
+  <title>Google Verification – SmartQueue</title>
+  <link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+  <!-- Supabase JS v2 Client via official CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabaseClient.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      background: #0f172a;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.18) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.8) 0px, transparent 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    /* Ambient background glow */
+    .ambient-glow {
+      position: absolute;
+      width: 450px;
+      height: 450px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15), transparent 70%);
+      filter: blur(80px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       THEME STYLES (User Theme with Rotating Conic Glow Border)
+       ══════════════════════════════════════════════════════════════ */
+    .container {
+      --form-width: 320px;
+      --aspect-ratio: 1.08;
+      --login-box-color: #272727;
+      --input-color: #3a3a3a;
+      --button-color: #373737;
+      --footer-color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background: var(--login-box-color);
+      border-radius: 24px;
+      width: calc(var(--form-width) + 2px);
+      min-height: calc(var(--form-width) * var(--aspect-ratio) + 2px);
+      z-index: 8;
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.2),
+        0 8px 16px rgba(0, 0, 0, 0.2),
+        0 0 8px rgba(255, 255, 255, 0.1),
+        0 0 16px rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: translateY(-2px);
+    }
+
+    .container::before {
+      content: "";
+      position: absolute;
+      inset: -50px;
+      z-index: -2;
+      background: conic-gradient(
+        from 45deg,
+        transparent 75%,
+        #fff,
+        transparent 100%
+      );
+      animation: spin 4s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .login-box {
+      background: var(--login-box-color);
+      border-radius: 24px;
+      padding: 30px 24px;
+      width: var(--form-width);
+      min-height: calc(var(--form-width) * var(--aspect-ratio));
+      position: relative;
+      z-index: 10;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      box-shadow:
+        inset 0 40px 60px -8px rgba(255, 255, 255, 0.12),
+        inset 4px 0 12px -6px rgba(255, 255, 255, 0.12),
+        inset 0 0 12px -4px rgba(255, 255, 255, 0.12);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .logo {
+      width: 65px;
+      height: 65px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2),
+        rgba(0, 0, 0, 0.2)
+      );
+      box-shadow:
+        8px 8px 16px rgba(0, 0, 0, 0.2),
+        -8px -8px 16px rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      border: 2px solid #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      margin-bottom: 2px;
+      transition: transform 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .logo::before {
+      content: "";
+      position: absolute;
+      bottom: 10px;
+      width: 50%;
+      height: 20%;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      border-bottom-right-radius: 20px;
+      border-bottom-left-radius: 20px;
+      border: 2.5px solid #fff;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      border: 2.5px solid #fff;
+    }
+
+    .header {
+      width: 100%;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      padding: 2px 4px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      letter-spacing: -0.02em;
+    }
+
+    .sub-badge {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.65);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: -6px;
+      margin-bottom: 2px;
+    }
+
+    .sub-badge span.dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 6px #10b981;
+    }
+
+    .button {
+      width: 100%;
+      height: 44px;
+      border: none;
+      border-radius: 22px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      background: var(--button-color);
+      color: white;
+      transition: all 0.25s ease;
+      box-shadow:
+        inset 0px 3px 6px -4px rgba(255, 255, 255, 0.6),
+        inset 0px -3px 6px -2px rgba(0, 0, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .button:hover {
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow:
+        inset 0px 3px 6px rgba(255, 255, 255, 0.6),
+        inset 0px -3px 6px rgba(0, 0, 0, 0.8),
+        0px 0px 14px rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .button:active {
+      transform: translateY(1px);
+      box-shadow:
+        inset 0px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .google-sign-in {
+      background: #2b2b2b;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 4px;
+    }
+
+    .google-sign-in:hover {
+      background: #363636;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .icon {
+      height: 18px;
+      width: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Status Alert Banner */
+    .status-alert {
+      width: 100%;
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      line-height: 1.4;
+      text-align: center;
+      display: none;
+      animation: fadeIn 0.3s ease;
+      word-break: break-word;
+    }
+
+    .status-alert.info {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #93c5fd;
+      display: block;
+    }
+
+    .status-alert.success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      display: block;
+    }
+
+    .status-alert.error {
+      background: rgba(239, 68, 68, 0.18);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #fca5a5;
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Footer Navigation */
+    .footer {
+      width: 100%;
+      text-align: center;
+      color: var(--footer-color);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .footer .link {
+      position: relative;
+      color: var(--footer-color);
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.3s ease;
+      cursor: pointer;
+    }
+
+    .footer .link::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: -2px;
+      width: 0;
+      border-radius: 6px;
+      height: 1px;
+      background: currentColor;
+      transition: width 0.3s ease;
+    }
+
+    .footer .link:hover {
+      color: #fff;
+    }
+
+    .footer .link:hover::after {
+      width: 100%;
+    }
+
+    /* Logged In View */
+    #profileView {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .user-avatar {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: 2px solid #10b981;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.4);
+      object-fit: cover;
+    }
+
+    .user-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .user-email {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      word-break: break-all;
+    }
+
+    /* Small spinner */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: #fff;
+      animation: spinSpinner 0.8s linear infinite;
+    }
+    @keyframes spinSpinner {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="ambient-glow"></div>
+
+  <!-- THEME CONTAINER WITH ROTATING CONIC-GRADIENT BORDER -->
+  <div class="container">
+    <div class="login-box">
+      
+      <!-- 1. GOOGLE VERIFICATION VIEW (DEFAULT) -->
+      <form class="form" id="googleAuthForm" onsubmit="return false;">
+        
+        <!-- Logo Emblem -->
+        <div class="logo" title="SmartQueue Identity"></div>
+        
+        <!-- Header -->
+        <span class="header">Welcome Back!</span>
+        <div class="sub-badge">
+          <span class="dot"></span>
+          <span>Google Verification</span>
+        </div>
+
+        <!-- Status Alert Area -->
+        <div id="statusAlert" class="status-alert"></div>
+
+        <!-- Google Sign-In Button with 4-Color Google SVG -->
+        <button type="button" class="button google-sign-in" id="googleSignInBtn">
+          <svg
+            class="icon"
+            viewBox="-3 0 262 262"
+            xmlns="http://www.w3.org/2000/svg"
+            preserveAspectRatio="xMidYMid"
+          >
+            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+            <g
+              id="SVGRepo_tracerCarrier"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            ></g>
+            <g id="SVGRepo_iconCarrier">
+              <path
+                d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
+                fill="#4285F4"
+              ></path>
+              <path
+                d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
+                fill="#34A853"
+              ></path>
+              <path
+                d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
+                fill="#FBBC05"
+              ></path>
+              <path
+                d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+                fill="#EB4335"
+              ></path>
+            </g>
+          </svg>
+          <span id="googleBtnText" class="span two">Sign in with Google</span>
+        </button>
+
+        <!-- Footer Links -->
+        <p class="footer">
+          <a href="/" class="link">← Return to SmartQueue</a>
+        </p>
+      </form>
+
+      <!-- 2. LOGGED IN / PROFILE CARD (Visible when active session exists) -->
+      <div id="profileView">
+        <img id="userAvatarImg" class="user-avatar" src="" alt="Google Avatar" />
+        <div>
+          <h3 id="userNameText" class="user-name">Patient</h3>
+          <p id="userEmailText" class="user-email">user@gmail.com</p>
+        </div>
+        
+        <div class="sub-badge" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3);">
+          <span class="dot"></span>
+          <span style="color: #6ee7b7; font-weight: 600;">Google Verified</span>
+        </div>
+
+        <button type="button" class="button" id="continueAppBtn" style="background: #2563eb;">
+          <span>Continue to SmartQueue &rarr;</span>
+        </button>
+
+        <button type="button" class="button" id="signOutBtn" style="background: #334155; margin-top: -4px;">
+          <span>Sign Out</span>
+        </button>
+
+        <p class="footer">
+          <a href="/" class="link">← Back to Home</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const authForm = document.getElementById('googleAuthForm');
+    const profileView = document.getElementById('profileView');
+    const googleBtn = document.getElementById('googleSignInBtn');
+    const googleBtnText = document.getElementById('googleBtnText');
+    const statusAlert = document.getElementById('statusAlert');
+    const userAvatarImg = document.getElementById('userAvatarImg');
+    const userNameText = document.getElementById('userNameText');
+    const userEmailText = document.getElementById('userEmailText');
+    const continueAppBtn = document.getElementById('continueAppBtn');
+    const signOutBtn = document.getElementById('signOutBtn');
+
+    function showAlert(msg, type = 'info') {
+      if (!statusAlert) return;
+      statusAlert.className = 'status-alert ' + type;
+      statusAlert.innerHTML = msg;
+    }
+
+    function hideAlert() {
+      if (!statusAlert) return;
+      statusAlert.className = 'status-alert';
+      statusAlert.style.display = 'none';
+      statusAlert.innerHTML = '';
+    }
+
+    function showProfile(user) {
+      if (!user) return;
+      authForm.style.display = 'none';
+      profileView.style.display = 'flex';
+
+      const email = user.email || '';
+      const metadata = user.user_metadata || {};
+      const fullName = metadata.full_name || metadata.name || email.split('@')[0] || 'Patient';
+      const avatarUrl = metadata.avatar_url || metadata.picture || 
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2563eb&color=fff&bold=true`;
+
+      userNameText.textContent = fullName;
+      userEmailText.textContent = email;
+      userAvatarImg.src = avatarUrl;
+
+      // Sync user profile to localStorage for main SmartQueue intake & header
+      try {
+        localStorage.setItem('smartqueue_user', JSON.stringify({
+          email: email,
+          name: fullName,
+          avatar: avatarUrl,
+          id: user.id,
+          provider: 'google',
+          loggedIn: true,
+          loginTime: new Date().toISOString()
+        }));
+      } catch (e) {}
+    }
+
+    function showAuthForm() {
+      authForm.style.display = 'flex';
+      profileView.style.display = 'none';
+      googleBtn.disabled = false;
+      googleBtnText.textContent = 'Sign in with Google';
+    }
+
+    // Google Sign-In Trigger
+    async function handleGoogleSignIn() {
+      hideAlert();
+      googleBtn.disabled = true;
+      googleBtnText.innerHTML = '<span class="spinner"></span> Connecting Google...';
+
+      try {
+        if (!window.smartQueueAuth) {
+          throw new Error('Authentication service is initializing. Please try again in a moment.');
+        }
+
+        showAlert('Redirecting to Google Verification portal...', 'info');
+
+        // Target redirect back to login.html or specified return URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnTarget = urlParams.get('redirect') || '/';
+        const redirectUrl = window.location.origin + '/login.html?redirect=' + encodeURIComponent(returnTarget);
+
+        await window.smartQueueAuth.signInWithGoogle(redirectUrl);
+
+      } catch (err) {
+        console.error('[Google Verification Error]', err);
+        showAlert(err.message || 'Unable to connect to Google OAuth. Please verify your Supabase configuration.', 'error');
+        googleBtn.disabled = false;
+        googleBtnText.textContent = 'Sign in with Google';
+      }
+    }
+
+    if (googleBtn) {
+      googleBtn.addEventListener('click', handleGoogleSignIn);
+    }
+
+    // Continue to App
+    if (continueAppBtn) {
+      continueAppBtn.addEventListener('click', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const returnUrl = urlParams.get('redirect') || '/';
+        window.location.href = returnUrl;
+      });
+    }
+
+    // Sign Out
+    if (signOutBtn) {
+      signOutBtn.addEventListener('click', async () => {
+        signOutBtn.disabled = true;
+        signOutBtn.textContent = 'Signing out...';
+        if (window.smartQueueAuth) {
+          await window.smartQueueAuth.signOut();
+        }
+        showAuthForm();
+        showAlert('✓ Successfully signed out.', 'info');
+      });
+    }
+
+    // Check existing session on load
+    window.addEventListener('DOMContentLoaded', async () => {
+      // Check if user came from OAuth callback (hash or code)
+      try {
+        if (window.smartQueueAuth) {
+          const session = await window.smartQueueAuth.getSession();
+          if (session && session.user) {
+            showProfile(session.user);
+            showAlert('✓ Verified successfully via Google!', 'success');
+
+            // If user came with explicit redirect query, auto-forward after brief notification
+            const urlParams = new URLSearchParams(window.location.search);
+            const redirectUrl = urlParams.get('redirect');
+            if (redirectUrl && redirectUrl !== '/login.html') {
+              setTimeout(() => {
+                window.location.href = redirectUrl;
+              }, 1200);
+            }
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn('[Session Init Error]', e);
+      }
+
+      // Check localStorage cached user
+      try {
+        const cached = localStorage.getItem('smartqueue_user');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.loggedIn && parsed.email) {
+            showProfile({
+              email: parsed.email,
+              user_metadata: { full_name: parsed.name, avatar_url: parsed.avatar }
+            });
+          }
+        }
+      } catch (e) {}
+    });
+
+    // Listen to Supabase Auth State changes in real time
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.smartQueueAuth && window.smartQueueAuth.client) {
+        window.smartQueueAuth.client.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session && session.user) {
+            showProfile(session.user);
+            showAlert('✓ Google Verification Verified!', 'success');
+          } else if (event === 'SIGNED_OUT') {
+            showAuthForm();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

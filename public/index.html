@@ -19,6 +19,10 @@
   <!-- Tailwind CSS CDN with forms and container queries plugin -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
+  <!-- Supabase JS v2 Client & Client Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/supabaseClient.js"></script>
+
   <!-- Google Fonts: Inter, Newsreader, and Azeret Mono for authentic thermal tickets -->
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -57,6 +61,13 @@
       overflow-x: hidden;
       max-width: 100vw;
       -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Mobile Header Action Rules: Never display PWA Install button in phone top navbar (< 768px) */
+    @media (max-width: 767px) {
+      #pwaHeaderInstallBtn {
+        display: none !important;
+      }
     }
 
     /* ══════════════════════════════════════════════════════════════
@@ -948,18 +959,18 @@
 
     <!-- Top Landing Navigation Bar -->
     <header class="w-full bg-white/90 backdrop-blur-md border-b border-slate-200/80 sticky top-0 z-40 transition-all">
-      <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-18 sm:h-20 flex items-center justify-between gap-4">
+      <div class="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2 sm:gap-4">
         
         <!-- Brand Logo -->
-        <a href="#" onclick="goToScreen(0); return false;" class="inline-flex items-center gap-3 group">
-          <div class="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white shadow-md shadow-slate-950/20 transition-transform group-hover:scale-105 shrink-0">
-            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
+        <a href="#" onclick="goToScreen(0); return false;" class="inline-flex items-center gap-2 sm:gap-3 group shrink-0">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-950 flex items-center justify-center text-white shadow-md shadow-slate-950/20 transition-transform group-hover:scale-105 shrink-0">
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" viewBox="0 0 24 24">
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
             </svg>
           </div>
           <div>
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-lg sm:text-xl text-slate-900 tracking-tight">SmartQueue</span>
+            <div class="flex items-center gap-1.5 sm:gap-2">
+              <span class="font-extrabold text-base sm:text-xl text-slate-900 tracking-tight">SmartQueue</span>
               <span class="hidden sm:inline-block text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">OPD Live</span>
             </div>
             <p class="text-[11px] text-slate-400 font-medium hidden sm:block">Digital Hospital & Clinic Queue System</p>
@@ -976,27 +987,47 @@
         </nav>
 
         <!-- Header Actions -->
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
           
-          <!-- PWA Install App Button (Visible when PWA install is ready) -->
-          <button id="pwaHeaderInstallBtn" type="button" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs">
+          <!-- Supabase Google Verification / Sign In Button (When unauthenticated) -->
+          <a id="headerGoogleAuthBtn" href="/login.html" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition-all shadow-2xs shrink-0" title="Sign in with Google">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg">
+              <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"></path>
+              <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853"></path>
+              <path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05"></path>
+              <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335"></path>
+            </svg>
+            <span class="hidden sm:inline">Sign in</span>
+          </a>
+
+          <!-- User Profile Pill (When authenticated via Google) -->
+          <div id="headerUserProfilePill" class="hidden items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-50 text-emerald-900 border border-emerald-200 shrink-0">
+            <img id="headerUserAvatar" class="w-5 h-5 rounded-full object-cover border border-emerald-500" src="" alt="Avatar" />
+            <span id="headerUserName" class="max-w-[80px] sm:max-w-[110px] truncate">User</span>
+            <button type="button" onclick="smartQueueSignOut()" class="text-emerald-700 hover:text-red-600 font-bold ml-1 text-[11px] underline" title="Sign Out">Exit</button>
+          </div>
+
+          <!-- PWA Install App Button (Visible on Desktop / Tablet only when PWA install is ready) -->
+          <button id="pwaHeaderInstallBtn" type="button" class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-colors shadow-2xs shrink-0">
             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Install App</span>
           </button>
 
-          <button type="button" onclick="goToScreen(5)" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-1.5 sm:gap-2">
-            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span class="hidden sm:inline">Track</span> <span>Tokens</span>
+          <!-- Track Tokens Button (Tablet & Desktop - hidden on mobile to prioritize booking action) -->
+          <button type="button" onclick="goToScreen(5)" class="hidden sm:flex items-center gap-1.5 sm:gap-2 px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors shrink-0" title="Track Live Tokens">
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 animate-pulse shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Track Tokens</span>
           </button>
 
-          <button type="button" onclick="goToScreen(1)" class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md shadow-slate-950/20 hover:shadow-lg transition-all flex items-center gap-1.5 sm:gap-2 group">
-            <span class="hidden sm:inline">Book Appointment</span>
-            <span class="sm:hidden">Book Now</span>
-            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          <!-- Book Appointment Button (Always visible, fits smoothly on all devices) -->
+          <button type="button" onclick="goToScreen(1)" class="px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md shadow-slate-950/20 hover:shadow-lg transition-all flex items-center gap-1.5 sm:gap-2 group shrink-0" title="Book Appointment & Get Token">
+            <span class="hidden min-[360px]:inline">Book Appointment</span>
+            <span class="min-[360px]:hidden">Book Now</span>
+            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:translate-x-1 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
           </button>
 
           <!-- Mobile Hamburger Menu Button (Phone & Tablet) -->
-          <button id="mobileMenuToggleBtn" type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none" aria-label="Toggle navigation menu">
+          <button id="mobileMenuToggleBtn" type="button" onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors focus:outline-none shrink-0" aria-label="Toggle navigation menu">
             <svg id="hamburgerIcon" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
             <svg id="closeIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
@@ -1006,19 +1037,61 @@
 
       <!-- Mobile & Tablet Dropdown Navigation Menu -->
       <div id="mobileMenuDropdown" class="hidden lg:hidden border-t border-slate-200 bg-white/98 backdrop-blur-xl px-4 py-4 space-y-3 transition-all">
-        <div class="flex flex-col space-y-1.5 text-sm font-semibold text-slate-700">
-          <a href="#how-it-works" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">How It Works</a>
-          <a href="#features-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Features</a>
-          <a href="#hospitals-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Hospitals</a>
-          <a href="#doctors-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">Specialists</a>
-          <a href="#faq-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">FAQ</a>
+        <div class="flex flex-col space-y-1 text-sm font-semibold text-slate-700">
+          <a href="#how-it-works" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-between">
+            <span>How It Works</span>
+            <span class="text-xs text-slate-400">→</span>
+          </a>
+          <a href="#features-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-between">
+            <span>Features</span>
+            <span class="text-xs text-slate-400">→</span>
+          </a>
+          <a href="#hospitals-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-between">
+            <span>Hospitals</span>
+            <span class="text-xs text-slate-400">→</span>
+          </a>
+          <a href="#doctors-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-between">
+            <span>Specialists</span>
+            <span class="text-xs text-slate-400">→</span>
+          </a>
+          <a href="#faq-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors flex items-center justify-between">
+            <span>FAQ</span>
+            <span class="text-xs text-slate-400">→</span>
+          </a>
         </div>
         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-          <button id="pwaMobileMenuInstallBtn" type="button" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-2">
+          <!-- Mobile Google Verification -->
+          <div id="mobileAuthWrap" class="w-full">
+            <a id="mobileGoogleAuthBtn" href="/login.html" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-200 flex items-center justify-center gap-2 transition-colors">
+              <svg class="w-4 h-4 shrink-0" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg">
+                <path d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027" fill="#4285F4"></path>
+                <path d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1" fill="#34A853"></path>
+                <path d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782" fill="#FBBC05"></path>
+                <path d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251" fill="#EB4335"></path>
+              </svg>
+              <span>Sign in with Google (Supabase)</span>
+            </a>
+            <div id="mobileUserProfileCard" class="hidden items-center justify-between p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+              <div class="flex items-center gap-2">
+                <img id="mobileUserAvatar" class="w-7 h-7 rounded-full object-cover border border-emerald-500" src="" alt="Avatar" />
+                <div>
+                  <p id="mobileUserName" class="text-xs font-bold text-emerald-950">Patient</p>
+                  <p id="mobileUserEmail" class="text-[10px] text-emerald-700">user@gmail.com</p>
+                </div>
+              </div>
+              <button type="button" onclick="smartQueueSignOut()" class="text-xs text-red-600 font-bold px-2 py-1 rounded bg-white border border-red-200">Exit</button>
+            </div>
+          </div>
+          <button onclick="goToScreen(5); toggleMobileMenu(false);" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 border border-slate-200 flex items-center justify-center gap-2 transition-colors">
+            <svg class="w-4 h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Track Live Queue &amp; Tokens</span>
+          </button>
+          <button id="pwaMobileMenuInstallBtn" type="button" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-2 transition-colors">
             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Install SmartQueue App</span>
           </button>
-          <button onclick="goToScreen(1); toggleMobileMenu(false);" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-950 hover:bg-slate-800 flex items-center justify-center gap-2 shadow-sm">
+          <button onclick="goToScreen(1); toggleMobileMenu(false);" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-slate-950 hover:bg-slate-800 flex items-center justify-center gap-2 shadow-sm transition-colors">
+            <svg class="w-4 h-4 text-amber-300" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
             <span>Book Appointment &amp; Get Token</span>
           </button>
         </div>
@@ -2480,9 +2553,16 @@
       specialty: "General Physician",
       date: null,
       slot: null,
-      appointments: [
-
-      ]
+      appointments: (function () {
+        try {
+          const saved = localStorage.getItem('smartqueue_appointments');
+          if (saved) {
+            const p = JSON.parse(saved);
+            if (Array.isArray(p) && p.length > 0) return p;
+          }
+        } catch (e) {}
+        return [];
+      })()
     };
 
     // ── PATIENT PROFILE & UI SYNCHRONIZATION ─────────────────────
@@ -2526,11 +2606,39 @@
       });
     }
 
+    function autofillPatientFromGoogle() {
+      try {
+        const cached = localStorage.getItem('smartqueue_user');
+        if (cached) {
+          const user = JSON.parse(cached);
+          if (user && user.email) {
+            const emailInput = document.getElementById('email');
+            if (emailInput && !emailInput.value) {
+              emailInput.value = user.email;
+            }
+            const fnameInput = document.getElementById('fname');
+            const lnameInput = document.getElementById('lname');
+            if (user.name) {
+              const parts = user.name.trim().split(' ');
+              if (fnameInput && !fnameInput.value) fnameInput.value = parts[0] || '';
+              if (lnameInput && !lnameInput.value && parts.length > 1) {
+                lnameInput.value = parts.slice(1).join(' ');
+              }
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
     // ── NAVIGATION ────────────────────────────────────────────────
     function goToScreen(n, fromBooking = false) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
       const target = document.getElementById('screen' + n);
       if (target) target.classList.add('visible');
+
+      if (n === 1) {
+        autofillPatientFromGoogle();
+      }
 
       syncPatientUI();
 
@@ -2849,7 +2957,29 @@
         booked: new Date().toLocaleDateString('en-IN')
       };
 
+      // Tag ticket with Google account if user is signed in
+      try {
+        const cachedUser = localStorage.getItem('smartqueue_user');
+        if (cachedUser) {
+          const u = JSON.parse(cachedUser);
+          if (u && u.email) {
+            appt.userEmail = u.email;
+            appt.userName = u.name;
+          }
+        }
+      } catch (e) {}
+
       state.appointments.unshift(appt);
+
+      // Persistently store appointments and tickets in localStorage
+      try {
+        localStorage.setItem('smartqueue_appointments', JSON.stringify(state.appointments));
+        if (appt.userEmail) {
+          localStorage.setItem('smartqueue_user_tickets_' + appt.userEmail, JSON.stringify(state.appointments));
+        }
+      } catch (e) {
+        console.warn('[SmartQueue Storage] Failed to save appointments to localStorage:', e);
+      }
 
       // Send to Google Apps Script backend (original)
       fetch(BACKEND_URL, {
@@ -3552,8 +3682,8 @@ Be concise, warm and helpful. Support Hindi or English.`;
       e.preventDefault();
       deferredPrompt = e;
 
-      // Reveal install buttons in header and mobile drawer
-      if (pwaHeaderBtn) pwaHeaderBtn.classList.remove('hidden');
+      // Reveal install buttons: header button only on desktop/tablet (>= 768px), drawer button on all screens
+      if (pwaHeaderBtn && window.innerWidth >= 768) pwaHeaderBtn.classList.remove('hidden');
       if (pwaMobileBtn) pwaMobileBtn.classList.remove('hidden');
 
       // Show floating prompt banner if not dismissed in last 24 hours
@@ -3565,6 +3695,17 @@ Be concise, warm and helpful. Support Hindi or English.`;
             pwaBanner.classList.remove('hidden');
           }
         }, 2200);
+      }
+    });
+
+    // Ensure header install button stays hidden on phone resize
+    window.addEventListener('resize', () => {
+      if (pwaHeaderBtn && deferredPrompt) {
+        if (window.innerWidth >= 768) {
+          pwaHeaderBtn.classList.remove('hidden');
+        } else {
+          pwaHeaderBtn.classList.add('hidden');
+        }
       }
     });
 
@@ -3691,6 +3832,131 @@ Be concise, warm and helpful. Support Hindi or English.`;
         }, 5000);
       }
     })();
+
+    // ==============================================================================
+    // SMARTQUEUE SUPABASE GOOGLE AUTH SYNCHRONIZATION
+    // ==============================================================================
+    function syncUserAuthState(user) {
+      const headerAuthBtn = document.getElementById('headerGoogleAuthBtn');
+      const headerProfilePill = document.getElementById('headerUserProfilePill');
+      const headerUserAvatar = document.getElementById('headerUserAvatar');
+      const headerUserName = document.getElementById('headerUserName');
+      const mobileGoogleAuthBtn = document.getElementById('mobileGoogleAuthBtn');
+      const mobileUserProfileCard = document.getElementById('mobileUserProfileCard');
+      const mobileUserAvatar = document.getElementById('mobileUserAvatar');
+      const mobileUserName = document.getElementById('mobileUserName');
+      const mobileUserEmail = document.getElementById('mobileUserEmail');
+      const navPatientBadge = document.getElementById('navPatientBadge');
+      const navPatientName = document.getElementById('navPatientName');
+
+      if (user) {
+        const email = user.email || '';
+        const metadata = user.user_metadata || {};
+        const fullName = metadata.full_name || metadata.name || email.split('@')[0] || 'Patient';
+        const avatarUrl = metadata.avatar_url || metadata.picture || 
+          `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=2563eb&color=fff&bold=true`;
+
+        if (headerAuthBtn) headerAuthBtn.classList.add('hidden');
+        if (headerProfilePill) {
+          headerProfilePill.classList.remove('hidden');
+          headerProfilePill.classList.add('flex');
+        }
+        if (headerUserAvatar) headerUserAvatar.src = avatarUrl;
+        if (headerUserName) headerUserName.textContent = fullName.split(' ')[0];
+
+        if (mobileGoogleAuthBtn) mobileGoogleAuthBtn.classList.add('hidden');
+        if (mobileUserProfileCard) {
+          mobileUserProfileCard.classList.remove('hidden');
+          mobileUserProfileCard.classList.add('flex');
+        }
+        if (mobileUserAvatar) mobileUserAvatar.src = avatarUrl;
+        if (mobileUserName) mobileUserName.textContent = fullName;
+        if (mobileUserEmail) mobileUserEmail.textContent = email;
+
+        if (navPatientBadge && navPatientName) {
+          navPatientBadge.classList.remove('hidden');
+          navPatientName.textContent = fullName.split(' ')[0];
+        }
+
+        // Auto-fill intake inputs (Screen 1) if present and currently blank
+        const fnameInput = document.getElementById('fname');
+        const lnameInput = document.getElementById('lname');
+        const emailInput = document.getElementById('email');
+        if (fnameInput && !fnameInput.value) {
+          const parts = fullName.split(' ');
+          fnameInput.value = parts[0] || '';
+          if (lnameInput && !lnameInput.value && parts.length > 1) {
+            lnameInput.value = parts.slice(1).join(' ');
+          }
+        }
+        if (emailInput && !emailInput.value && email) {
+          emailInput.value = email;
+        }
+      } else {
+        if (headerAuthBtn) headerAuthBtn.classList.remove('hidden');
+        if (headerProfilePill) {
+          headerProfilePill.classList.add('hidden');
+          headerProfilePill.classList.remove('flex');
+        }
+        if (mobileGoogleAuthBtn) mobileGoogleAuthBtn.classList.remove('hidden');
+        if (mobileUserProfileCard) {
+          mobileUserProfileCard.classList.add('hidden');
+          mobileUserProfileCard.classList.remove('flex');
+        }
+      }
+    }
+
+    async function checkSupabaseSession() {
+      try {
+        if (window.smartQueueAuth) {
+          const session = await window.smartQueueAuth.getSession();
+          if (session && session.user) {
+            syncUserAuthState(session.user);
+            return;
+          }
+        }
+      } catch (e) {}
+
+      // Fallback to localStorage cached session
+      try {
+        const cached = localStorage.getItem('smartqueue_user');
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.loggedIn && parsed.email) {
+            syncUserAuthState({
+              email: parsed.email,
+              user_metadata: { full_name: parsed.name, avatar_url: parsed.avatar }
+            });
+            return;
+          }
+        }
+      } catch (e) {}
+
+      syncUserAuthState(null);
+    }
+
+    async function smartQueueSignOut() {
+      if (window.smartQueueAuth) {
+        await window.smartQueueAuth.signOut();
+      }
+      try {
+        localStorage.removeItem('smartqueue_user');
+      } catch (e) {}
+      syncUserAuthState(null);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      checkSupabaseSession();
+      if (window.smartQueueAuth && window.smartQueueAuth.client) {
+        window.smartQueueAuth.client.auth.onAuthStateChange((event, session) => {
+          if (event === 'SIGNED_IN' && session && session.user) {
+            syncUserAuthState(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            syncUserAuthState(null);
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
