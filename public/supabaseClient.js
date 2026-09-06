@@ -6,10 +6,9 @@
 // <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 // ==============================================================================
 
-// 1. Replace these placeholders with your actual Supabase project credentials:
-// You can find them in your Supabase Dashboard -> Project Settings -> API
-const SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+// 1. Supabase project credentials:
+const SUPABASE_URL = "https://gyxgzycjmrenggwofmpj.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_8lqWpjReTGbAMgESJW6Rpg_bOlbMqbL";
 
 // 2. Initialize the Supabase client
 // When using the CDN script, the global 'supabase' library is attached to window.
