@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In · Google OAuth with Supabase</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-card {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 20px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+      text-align: center;
+    }
+
+    .brand-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background-color: #0f172a;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin: 0 auto 1.25rem;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.5rem;
+    }
+
+    p.subtitle {
+      font-size: 0.875rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+
+    /* 2. Google Sign-In Button */
+    .btn-google {
+      width: 100%;
+      height: 50px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #0f172a;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-google:hover {
+      background-color: #f8fafc;
+      border-color: #94a3b8;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07);
+    }
+
+    .btn-google:active {
+      transform: scale(0.99);
+    }
+
+    .btn-google:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .google-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Error Message Alert */
+    .error-alert {
+      display: none;
+      background-color: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-top: 1.25rem;
+      text-align: left;
+    }
+
+    .footer-text {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-top: 2rem;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-card">
+    <div class="brand-icon">⚡</div>
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Sign in with your Google account to access your protected dashboard.</p>
+
+    <!-- 2. "Sign in with Google" Button -->
+    <button type="button" id="googleSignInBtn" class="btn-google" onclick="signInWithGoogle()">
+      <svg class="google-icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#FBBB00" d="M113.47 309.408 95.648 375.94l-65.139 1.378C11.042 341.211 0 299.9 0 256c0-42.451 10.324-82.483 28.624-117.732h.014l57.992 10.632 25.404 57.644c-5.317 15.501-8.215 32.141-8.215 49.456 0 18.792 3.404 36.797 9.649 53.408z"/>
+        <path fill="#518EF8" d="M507.527 208.176C510.467 223.662 512 239.655 512 256c0 18.328-1.927 36.206-5.598 53.451-12.462 58.683-45.025 109.925-90.134 146.187l-.014-.014-73.044-3.727-10.338-64.535c29.932-17.554 53.324-45.025 65.646-77.911H261.69V208.176h245.837z"/>
+        <path fill="#28B446" d="M416.253 455.624l.014.014C372.396 490.901 316.666 512 256 512c-97.491 0-182.252-54.491-225.491-134.681l82.961-67.91c21.619 57.698 77.278 98.771 142.53 98.771 28.047 0 54.323-7.582 76.87-20.818l83.383 68.262z"/>
+        <path fill="#F14336" d="M419.404 58.936l-82.933 67.896c-23.335-14.586-50.919-23.012-80.471-23.012-66.729 0-123.429 42.957-143.965 102.724l-83.397-68.276h-.014C71.23 56.123 157.06 0 256 0c62.115 0 119.068 22.126 163.404 58.936z"/>
+      </svg>
+      <span>Sign in with Google</span>
+    </button>
+
+    <!-- Error message alert -->
+    <div id="authErrorMessage" class="error-alert"></div>
+
+    <p class="footer-text">Protected by Supabase Auth with Google OAuth PKCE flow.</p>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- SCRIPT INCLUSIONS (ORDER IS CRITICAL!)                                   -->
+  <!-- ========================================================================= -->
+  <!-- 1. Supabase JS Client via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 2. Your Supabase Client Config & Initialization -->
+  <script src="supabaseClient.js"></script>
+
+  <!-- 3. Your Authentication & Guard Functions -->
+  <script src="auth.js"></script>
+
+  <!-- 4. Check if user is ALREADY logged in when opening login page -->
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 3. If session already exists, forward to dashboard immediately
+      await redirectIfAuthenticated();
+    });
+  </script>
+</body>
+</html>

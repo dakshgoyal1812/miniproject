@@ -605,9 +605,18 @@ async function handler(req, res) {
   let safePath = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[\/\\])+/, '');
   if (safePath === '/' || safePath === '\\' || safePath === '') {
     safePath = '/index.html';
+  } else if (safePath === '/login' || safePath === '\\login') {
+    safePath = '/login.html';
+  } else if (safePath === '/signup' || safePath === '\\signup') {
+    safePath = '/signup.html';
   }
 
-  const filePath = path.join(__dirname, safePath);
+  let filePath = path.join(__dirname, safePath);
+
+  // If path doesn't exist directly but .html exists (clean URLs)
+  if (!fs.existsSync(filePath) && fs.existsSync(filePath + '.html')) {
+    filePath = filePath + '.html';
+  }
 
   if (!filePath.startsWith(__dirname)) {
     res.writeHead(403, { 'Content-Type': 'text/plain' });
