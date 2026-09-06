@@ -19,34 +19,6 @@
   <!-- Tailwind CSS CDN with forms and container queries plugin -->
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-  <!-- Import Map for @supabase/supabase-js module resolution in browser -->
-  <script type="importmap">
-    {
-      "imports": {
-        "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm"
-      }
-    }
-  </script>
-  <script type="module">
-    import { supabase } from '/src/supabaseClient.js';
-    window.supabaseClient = supabase;
-
-    // Check & sync current Supabase auth session
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session && session.user) {
-        const userObj = {
-          email: session.user.email,
-          name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
-          id: session.user.id,
-          loggedIn: true
-        };
-        localStorage.setItem('smartqueue_user', JSON.stringify(userObj));
-        if (typeof syncPatientUI === 'function') syncPatientUI();
-      }
-    } catch (e) {}
-  </script>
-
   <!-- Google Fonts: Inter, Newsreader, and Azeret Mono for authentic thermal tickets -->
   <link href="https://fonts.googleapis.com" rel="preconnect"/>
   <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
@@ -719,10 +691,6 @@
           <span class="w-2 h-2 rounded-full bg-blue-600"></span>
           <span id="navPatientName">Patient</span>
         </div>
-        <a href="/login.html" id="appNavSignInBtn" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] bg-white hover:bg-slate-50 transition-colors shadow-xs text-[#344054] flex items-center gap-1.5">
-          <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-          <span id="appNavSignInBtnText" class="hidden sm:inline">Sign In</span>
-        </a>
         <button onclick="goToScreen(5)" class="text-xs font-semibold px-2.5 py-1.5 rounded-lg border border-[#D0D5DD] bg-white hover:bg-slate-50 transition-colors shadow-xs text-[#344054] flex items-center gap-1.5">
           <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span class="hidden sm:inline">Live Queue</span>
@@ -773,11 +741,6 @@
             <span>Install App</span>
           </button>
 
-          <a href="/login.html" id="landingSignInBtn" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-1.5 sm:gap-2">
-            <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            <span id="landingSignInBtnText">Sign In</span>
-          </a>
-
           <button type="button" onclick="goToScreen(5)" class="px-3 sm:px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 hover:bg-slate-100 border border-slate-200 transition-colors flex items-center gap-1.5 sm:gap-2">
             <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             <span class="hidden sm:inline">Track</span> <span>Tokens</span>
@@ -808,10 +771,6 @@
           <a href="#faq-section" onclick="toggleMobileMenu(false)" class="px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors">FAQ</a>
         </div>
         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-          <a href="/login.html" onclick="toggleMobileMenu(false)" id="mobileSignInBtn" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-slate-800 bg-slate-100 hover:bg-slate-200 flex items-center justify-center gap-2">
-            <svg class="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg>
-            <span id="mobileSignInBtnText">Sign In / Account</span>
-          </a>
           <button id="pwaMobileMenuInstallBtn" type="button" class="w-full py-2.5 px-4 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 flex items-center justify-center gap-2">
             <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span>Install SmartQueue App</span>
@@ -2203,6 +2162,34 @@
   </div>
 
 
+  <!-- PROGRESSIVE WEB APP (PWA) INSTALL TOAST BANNER -->
+  <div id="pwaInstallBanner" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-md bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-4 shadow-2xl text-white transition-all transform duration-300">
+    <div class="flex items-center gap-3.5">
+      <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-black text-lg shrink-0 shadow-md shadow-emerald-500/30">
+        SQ
+      </div>
+      <div class="flex-1 min-w-0">
+        <h4 class="text-sm font-bold text-white tracking-tight flex items-center gap-1.5">
+          <span>Install SmartQueue</span>
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">PWA</span>
+        </h4>
+        <p class="text-xs text-slate-300 mt-0.5 leading-snug">Fast access, live token alerts, and works offline on your phone or desktop.</p>
+      </div>
+      <button id="pwaDismissBannerBtn" class="text-slate-400 hover:text-white p-1.5 rounded-lg transition-colors" aria-label="Dismiss install banner">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="mt-3 flex items-center gap-2 pt-2 border-t border-slate-800">
+      <button id="pwaBannerInstallBtn" class="flex-1 py-2 px-3 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold rounded-xl text-xs transition-all shadow-md shadow-emerald-500/25 flex items-center justify-center gap-1.5 cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Install App</span>
+      </button>
+      <button id="pwaLaterBannerBtn" class="px-3 py-2 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors cursor-pointer">
+        Not Now
+      </button>
+    </div>
+  </div>
+
 
   <!-- APPLICATION JAVASCRIPT LOGIC -->
   <script>
@@ -2291,86 +2278,10 @@
       document.querySelectorAll('.active-patient-label').forEach(el => {
         el.textContent = fullName;
       });
-
-      // Synchronize User Authentication State in Navigation Headers
-      try {
-        const rawUser = localStorage.getItem('smartqueue_user');
-        if (rawUser) {
-          const u = JSON.parse(rawUser);
-          if (u && u.loggedIn) {
-            const userName = u.name || (u.email ? u.email.split('@')[0] : 'User');
-            
-            const landingBtn = document.getElementById('landingSignInBtn');
-            const landingText = document.getElementById('landingSignInBtnText');
-            if (landingBtn && landingText) {
-              landingText.textContent = userName;
-              landingBtn.title = `Signed in as ${u.email || userName} (Click to manage / sign out)`;
-              landingBtn.href = '#';
-              landingBtn.onclick = (e) => { e.preventDefault(); handleUserAccountPrompt(); };
-            }
-
-            const appNavBtn = document.getElementById('appNavSignInBtn');
-            const appNavText = document.getElementById('appNavSignInBtnText');
-            if (appNavBtn && appNavText) {
-              appNavText.textContent = userName;
-              appNavBtn.title = `Signed in as ${u.email || userName} (Click to manage / sign out)`;
-              appNavBtn.href = '#';
-              appNavBtn.onclick = (e) => { e.preventDefault(); handleUserAccountPrompt(); };
-            }
-
-            const mobileBtn = document.getElementById('mobileSignInBtn');
-            const mobileBtnText = document.getElementById('mobileSignInBtnText');
-            if (mobileBtn && mobileBtnText) {
-              mobileBtnText.textContent = `👤 ${userName} (Sign Out)`;
-              mobileBtn.href = '#';
-              mobileBtn.onclick = (e) => { e.preventDefault(); toggleMobileMenu(false); handleUserAccountPrompt(); };
-            }
-          }
-        }
-      } catch (err) {}
-    }
-
-    function handleUserAccountPrompt() {
-      try {
-        const rawUser = localStorage.getItem('smartqueue_user');
-        const user = rawUser ? JSON.parse(rawUser) : null;
-        if (!user) {
-          window.location.href = '/login.html';
-          return;
-        }
-        if (confirm(`You are currently signed in as:\n• Name: ${user.name || 'Patient'}\n• Email: ${user.email}\n\nWould you like to sign out?`)) {
-          localStorage.removeItem('smartqueue_user');
-          alert('You have been signed out successfully.');
-          window.location.reload();
-        }
-      } catch (e) {
-        window.location.href = '/login.html';
-      }
     }
 
     // ── NAVIGATION ────────────────────────────────────────────────
-    async function goToScreen(n, fromBooking = false) {
-      // Protect private pages with supabase.auth.getSession() — if no session, redirect to /login
-      if (n >= 1) {
-        let hasSession = false;
-        if (window.supabaseClient) {
-          try {
-            const { data: { session } } = await window.supabaseClient.auth.getSession();
-            hasSession = !!session;
-          } catch (e) {}
-        }
-        if (!hasSession) {
-          try {
-            const localUser = localStorage.getItem('smartqueue_user');
-            if (localUser) hasSession = JSON.parse(localUser).loggedIn;
-          } catch (e) {}
-        }
-        if (!hasSession) {
-          window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname + '#screen' + n);
-          return;
-        }
-      }
-
+    function goToScreen(n, fromBooking = false) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
       const target = document.getElementById('screen' + n);
       if (target) target.classList.add('visible');
@@ -3370,6 +3281,10 @@ Be concise, warm and helpful. Support Hindi or English.`;
     let deferredPrompt = null;
     const pwaHeaderBtn = document.getElementById('pwaHeaderInstallBtn');
     const pwaMobileBtn = document.getElementById('pwaMobileMenuInstallBtn');
+    const pwaBanner = document.getElementById('pwaInstallBanner');
+    const pwaBannerInstallBtn = document.getElementById('pwaBannerInstallBtn');
+    const pwaDismissBannerBtn = document.getElementById('pwaDismissBannerBtn');
+    const pwaLaterBannerBtn = document.getElementById('pwaLaterBannerBtn');
 
     // Register Service Worker
     if ('serviceWorker' in navigator) {
@@ -3392,6 +3307,17 @@ Be concise, warm and helpful. Support Hindi or English.`;
       // Reveal install buttons in header and mobile drawer
       if (pwaHeaderBtn) pwaHeaderBtn.classList.remove('hidden');
       if (pwaMobileBtn) pwaMobileBtn.classList.remove('hidden');
+
+      // Show floating prompt banner if not dismissed in last 24 hours
+      const lastDismissed = localStorage.getItem('sq_pwa_dismissed');
+      const now = Date.now();
+      if (!lastDismissed || (now - parseInt(lastDismissed, 10)) > 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+          if (deferredPrompt && pwaBanner) {
+            pwaBanner.classList.remove('hidden');
+          }
+        }, 2200);
+      }
     });
 
     async function triggerPwaInstall() {
@@ -3403,6 +3329,7 @@ Be concise, warm and helpful. Support Hindi or English.`;
       const { outcome } = await deferredPrompt.userChoice;
       console.log(`PWA install prompt choice: ${outcome}`);
       deferredPrompt = null;
+      if (pwaBanner) pwaBanner.classList.add('hidden');
       if (pwaHeaderBtn) pwaHeaderBtn.classList.add('hidden');
       if (pwaMobileBtn) pwaMobileBtn.classList.add('hidden');
     }
@@ -3413,11 +3340,22 @@ Be concise, warm and helpful. Support Hindi or English.`;
       triggerPwaInstall();
       toggleMobileMenu(false);
     });
+    if (pwaBannerInstallBtn) pwaBannerInstallBtn.addEventListener('click', triggerPwaInstall);
+
+    function dismissPwaBanner() {
+      if (pwaBanner) pwaBanner.classList.add('hidden');
+      localStorage.setItem('sq_pwa_dismissed', Date.now().toString());
+    }
+    window.dismissPwaBanner = dismissPwaBanner;
+
+    if (pwaDismissBannerBtn) pwaDismissBannerBtn.addEventListener('click', dismissPwaBanner);
+    if (pwaLaterBannerBtn) pwaLaterBannerBtn.addEventListener('click', dismissPwaBanner);
 
     // Listen for successful installation
     window.addEventListener('appinstalled', () => {
       console.log('🎉 SmartQueue PWA successfully installed on device!');
       deferredPrompt = null;
+      if (pwaBanner) pwaBanner.classList.add('hidden');
       if (pwaHeaderBtn) pwaHeaderBtn.classList.add('hidden');
       if (pwaMobileBtn) pwaMobileBtn.classList.add('hidden');
     });

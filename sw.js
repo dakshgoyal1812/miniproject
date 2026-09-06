@@ -1,8 +1,7 @@
-const CACHE_NAME = 'smartqueue-v1.0.1';
+const CACHE_NAME = 'smartqueue-v1.0.0';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/login.html',
   '/404.html',
   '/manifest.json',
   '/icons/icon-192.png',
@@ -40,7 +39,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Fetch Event: Network-first for /api and navigations, Stale-while-revalidate for static assets
+// Fetch Event: Network-first for /api, Stale-while-revalidate for static assets
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
@@ -65,23 +64,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML Navigation: Network First (fall back to cache when offline)
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const clone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-          }
-          return networkResponse;
-        })
-        .catch(() => caches.match(event.request).then((res) => res || caches.match('/index.html')))
-    );
-    return;
-  }
-
-  // Static Assets: Stale-While-Revalidate
+  // Static Assets & Navigation: Stale-While-Revalidate
   event.respondWith(
     caches.open(CACHE_NAME).then(async (cache) => {
       const cachedResponse = await cache.match(event.request);
@@ -93,10 +76,14 @@ self.addEventListener('fetch', (event) => {
           }
           return networkResponse;
         })
-        .catch(() => cachedResponse);
+        .catch(() => {
+          // If navigation fails and no cache, serve 404 or index
+          if (event.request.mode === 'navigate') {
+            return cache.match('/index.html') || cache.match('/404.html');
+          }
+        });
 
       return cachedResponse || fetchPromise;
     })
   );
 });
-
