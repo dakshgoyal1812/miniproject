@@ -59,29 +59,272 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    /* Landing Page Ambient Gradients */
+    /* ══════════════════════════════════════════════════════════════
+       HIGH-PERFORMANCE HERO & LANDING ANIMATIONS (GPU-ACCELERATED)
+       ══════════════════════════════════════════════════════════════ */
+
+    /* 1. Ambient Hero Aurora Float */
+    @keyframes floatAurora1 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(32px, -24px) scale(1.08); }
+      66% { transform: translate(-24px, 18px) scale(0.95); }
+    }
+    @keyframes floatAurora2 {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(-28px, 26px) scale(1.1); }
+      66% { transform: translate(22px, -18px) scale(0.94); }
+    }
     .hero-glow-blob-1 {
       position: absolute;
       top: -120px;
       left: 10%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, rgba(99, 102, 241, 0.04) 50%, transparent 70%);
+      width: 520px;
+      height: 520px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.16) 0%, rgba(99, 102, 241, 0.06) 50%, transparent 70%);
       filter: blur(60px);
       pointer-events: none;
       z-index: 0;
+      animation: floatAurora1 14s ease-in-out infinite alternate;
+      will-change: transform;
     }
-
     .hero-glow-blob-2 {
       position: absolute;
       top: 100px;
       right: 5%;
-      width: 450px;
-      height: 450px;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, rgba(14, 165, 233, 0.04) 50%, transparent 70%);
+      width: 480px;
+      height: 480px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(14, 165, 233, 0.06) 50%, transparent 70%);
       filter: blur(55px);
       pointer-events: none;
       z-index: 0;
+      animation: floatAurora2 18s ease-in-out infinite alternate;
+      will-change: transform;
+    }
+
+    /* 2. Hero Staggered Entrance Sequence */
+    @keyframes heroEntranceSlide {
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes heroEntranceScale {
+      from {
+        opacity: 0;
+        transform: scale(0.94) translateY(32px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    .hero-anim-pill {
+      animation: heroEntranceSlide 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
+    }
+    .hero-anim-title {
+      animation: heroEntranceSlide 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+    }
+    .hero-anim-sub {
+      animation: heroEntranceSlide 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.32s both;
+    }
+    .hero-anim-cta {
+      animation: heroEntranceSlide 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.46s both;
+    }
+    .hero-anim-proof {
+      animation: heroEntranceSlide 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
+    }
+    .hero-anim-kiosk {
+      animation: heroEntranceScale 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;
+    }
+
+    /* 3. Fluid Animated Shimmering Gradient Text */
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .animate-gradient-text {
+      background: linear-gradient(135deg, #2563eb 0%, #6366f1 28%, #0284c7 55%, #4f46e5 78%, #2563eb 100%);
+      background-size: 240% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientShift 6s ease-in-out infinite;
+    }
+
+    /* 4. Specular Button Shine Sweep */
+    .btn-shine-sweep {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+    }
+    .btn-shine-sweep::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -130%;
+      width: 65%;
+      height: 100%;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.24),
+        transparent
+      );
+      transform: skewX(-20deg);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .btn-shine-sweep:hover::before,
+    .btn-shine-sweep.auto-shine::before {
+      animation: shineSweep 1.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+    @keyframes shineSweep {
+      0% { left: -130%; }
+      100% { left: 230%; }
+    }
+
+    /* 5. Live Radar Beacon Rings */
+    .radar-beacon {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radar-beacon::before,
+    .radar-beacon::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 9999px;
+      border: 2px solid rgba(16, 185, 129, 0.65);
+      animation: radarRing 2.4s cubic-bezier(0.1, 0.8, 0.3, 1) infinite;
+      pointer-events: none;
+    }
+    .radar-beacon::after {
+      animation-delay: 1.2s;
+    }
+    @keyframes radarRing {
+      0% { transform: scale(0.9); opacity: 0.9; }
+      100% { transform: scale(2.4); opacity: 0; }
+    }
+
+    /* 6. Kiosk Animated Gradient Border Glow */
+    .kiosk-animated-border {
+      position: relative;
+      background: #020617;
+      border-radius: 1.5rem;
+      z-index: 1;
+    }
+    .kiosk-animated-border::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: calc(1.5rem + 2px);
+      background: conic-gradient(
+        from 0deg at 50% 50%,
+        #1e293b 0deg,
+        #2563eb 70deg,
+        #10b981 140deg,
+        #6366f1 240deg,
+        #1e293b 360deg
+      );
+      z-index: -1;
+      animation: rotateKioskBorder 8s linear infinite;
+      opacity: 0.65;
+      transition: opacity 0.3s;
+    }
+    .kiosk-animated-border:hover::before {
+      opacity: 0.95;
+    }
+    @keyframes rotateKioskBorder {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* 7. Token Pop / Flash on Advance */
+    @keyframes tokenPopAnimation {
+      0% { transform: scale(0.9); filter: brightness(1.7); text-shadow: 0 0 24px rgba(52, 211, 153, 0.9); }
+      50% { transform: scale(1.1); filter: brightness(1.3); text-shadow: 0 0 14px rgba(52, 211, 153, 0.5); }
+      100% { transform: scale(1); filter: brightness(1); text-shadow: none; }
+    }
+    .token-pop-active {
+      animation: tokenPopAnimation 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* 8. Floating Bob & Reverse Bob Animations */
+    @keyframes floatBobbing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+    @keyframes floatBobbingReverse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
+    }
+    .animate-float-bob {
+      animation: floatBobbing 4s ease-in-out infinite;
+    }
+    .animate-float-reverse {
+      animation: floatBobbingReverse 4.5s ease-in-out infinite;
+    }
+
+    /* 9. Interactive Card 3D Lift & Modern Glass Shadow */
+    .interactive-card {
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  box-shadow 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+                  border-color 0.25s ease;
+      will-change: transform, box-shadow;
+    }
+    .interactive-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 35px -8px rgba(16, 24, 40, 0.12), 0 8px 16px -6px rgba(16, 24, 40, 0.08);
+      border-color: rgba(59, 130, 246, 0.35) !important;
+    }
+
+    /* 10. Scroll Reveal Utilities */
+    .reveal-item {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: opacity, transform;
+    }
+    .reveal-item.is-revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+    .reveal-delay-5 { transition-delay: 0.40s; }
+    .reveal-delay-6 { transition-delay: 0.48s; }
+
+    /* 11. Animated Process Connecting Line for How It Works */
+    .process-line-wrap {
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .process-line-wrap::before {
+        content: '';
+        position: absolute;
+        top: 24px;
+        left: 14%;
+        right: 14%;
+        height: 2px;
+        background: linear-gradient(90deg, #2563eb, #0f172a, #059669);
+        background-size: 200% 100%;
+        animation: flowGradientLine 4s linear infinite;
+        z-index: 0;
+        opacity: 0.28;
+      }
+    }
+    @keyframes flowGradientLine {
+      0% { background-position: 100% 0; }
+      100% { background-position: -100% 0; }
     }
 
     /* Waves Pattern Background (Step 1) */
@@ -797,7 +1040,7 @@
           <div class="lg:col-span-7 flex flex-col justify-center text-left">
             
             <!-- Live Status Pill -->
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold w-fit mb-5 shadow-2xs">
+            <div class="hero-anim-pill inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/80 text-blue-800 text-xs font-semibold w-fit mb-5 shadow-2xs">
               <span class="flex h-2 w-2 relative">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
@@ -806,32 +1049,32 @@
             </div>
 
             <!-- Main Headline -->
-            <h1 class="text-3xl sm:text-5xl lg:text-[54px] font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-6">
+            <h1 class="hero-anim-title text-3xl sm:text-5xl lg:text-[54px] font-extrabold text-slate-950 tracking-tight leading-[1.15] mb-6">
               Skip The Crowded OPD.
-              <span class="block mt-1.5 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-sky-600">
+              <span class="block mt-1.5 animate-gradient-text">
                 Track Doctor Queues
               </span>
               In Real-Time.
             </h1>
 
             <!-- Subtitle -->
-            <p class="text-base sm:text-lg text-slate-600 leading-relaxed max-w-[620px] mb-8 font-normal">
+            <p class="hero-anim-sub text-base sm:text-lg text-slate-600 leading-relaxed max-w-[620px] mb-8 font-normal">
               Book verified specialist appointments across premier institutions like <strong>AIIMS Rishikesh</strong> and <strong>Himalayan Institute</strong>. Monitor your live queue position directly from your phone, and arrive right when the doctor is ready for you.
             </p>
 
             <!-- CTA Button Cluster -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-9">
+            <div class="hero-anim-cta flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 mb-9">
               
               <!-- Primary Booking CTA -->
-              <button type="button" onclick="goToScreen(1)" class="px-6 py-3.5 rounded-xl text-base font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-lg shadow-slate-950/25 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group">
+              <button type="button" onclick="goToScreen(1)" class="btn-shine-sweep px-6 py-3.5 rounded-xl text-base font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-lg shadow-slate-950/25 hover:shadow-xl transition-all flex items-center justify-center gap-2.5 group">
                 <svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 <span>Book Appointment & Get Token</span>
                 <svg class="w-4 h-4 transition-transform group-hover:translate-x-1 text-slate-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
               </button>
 
               <!-- Secondary AI Doctor CTA -->
-              <button type="button" onclick="toggleMediChat()" class="px-5 py-3.5 rounded-xl text-sm font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2">
-                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700">
+              <button type="button" onclick="toggleMediChat()" class="px-5 py-3.5 rounded-xl text-sm font-bold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300/80 shadow-xs hover:shadow-sm transition-all flex items-center justify-center gap-2 group">
+                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 transition-transform group-hover:scale-110">
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                 </span>
                 <span>Ask SmartQueue AI Assistant</span>
@@ -840,7 +1083,7 @@
             </div>
 
             <!-- Social Proof Bar -->
-            <div class="pt-6 border-t border-slate-200/80 flex flex-wrap items-center gap-6 text-xs text-slate-600">
+            <div class="hero-anim-proof pt-6 border-t border-slate-200/80 flex flex-wrap items-center gap-6 text-xs text-slate-600">
               
               <!-- Avatars -->
               <div class="flex items-center gap-2">
@@ -877,16 +1120,16 @@
           </div>
 
           <!-- Hero Right Column: Interactive Live OPD Kiosk & Visual -->
-          <div class="lg:col-span-5 relative">
+          <div class="lg:col-span-5 relative hero-anim-kiosk">
             
             <!-- Floating Decorative Badge Top Right -->
-            <div class="absolute -top-4 -right-2 z-20 hidden sm:flex items-center gap-2 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-bold text-slate-800">
+            <div class="animate-float-bob absolute -top-4 -right-2 z-20 hidden sm:flex items-center gap-2 bg-white/95 backdrop-blur-md px-3.5 py-2 rounded-xl shadow-lg border border-slate-200 text-xs font-bold text-slate-800">
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
               <span>Live Queue Sync Active</span>
             </div>
 
             <!-- Live OPD Counter Board Card -->
-            <div class="bg-slate-950 text-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-800 relative overflow-hidden">
+            <div class="kiosk-animated-border text-white rounded-3xl p-6 sm:p-7 shadow-2xl border border-slate-800 relative overflow-hidden">
               
               <!-- Subtle card background glow -->
               <div class="absolute top-0 right-0 w-48 h-48 bg-blue-600/20 rounded-full filter blur-3xl pointer-events-none"></div>
@@ -894,7 +1137,7 @@
               <!-- Top Bar of Kiosk Display -->
               <div class="flex items-center justify-between pb-4 border-b border-slate-800/80 mb-5 text-xs">
                 <div class="flex items-center gap-2">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span class="radar-beacon w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                   <span class="font-bold tracking-wide text-slate-200 uppercase text-[11px]">AIIMS Rishikesh • OPD Wing 2</span>
                 </div>
                 <span class="font-mono text-slate-400 text-[11px]">Chamber #104</span>
@@ -915,7 +1158,7 @@
               </div>
 
               <!-- Primary Token Served Banner -->
-              <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 mb-5 text-center relative">
+              <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 mb-5 text-center relative glow-badge-pulse">
                 <span class="text-[11px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Now Consulting (Serving Now)</span>
                 <div id="simCurrentTokenNum" class="text-4xl sm:text-5xl font-extrabold tracking-tight font-mono text-emerald-400 transition-all duration-300">
                   #SQ-1042
@@ -933,7 +1176,7 @@
                   <span>Est. Wait Time</span>
                 </div>
 
-                <div class="flex items-center justify-between bg-slate-900/60 hover:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-800/60 text-xs">
+                <div class="flex items-center justify-between bg-slate-900/60 hover:bg-slate-900 px-3.5 py-2 rounded-xl border border-slate-800/60 text-xs transition-colors">
                   <div class="flex items-center gap-2 font-mono font-bold text-white">
                     <span class="text-amber-400">▶</span>
                     <span id="simNextTokenNum">#SQ-1043</span>
@@ -961,12 +1204,12 @@
 
               <!-- Interactive Simulator Button & Booking Action -->
               <div class="flex items-center gap-2 pt-2 border-t border-slate-800/80">
-                <button type="button" onclick="simNextToken()" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 shadow-xs" title="Click to advance queue simulator">
+                <button type="button" onclick="simNextToken()" class="flex-1 py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 text-xs font-semibold transition-all flex items-center justify-center gap-1.5 shadow-xs cursor-pointer" title="Click to advance queue simulator">
                   <svg class="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m13 17 5-5-5-5M6 17l5-5-5-5"/></svg>
                   <span>Simulate Next Turn</span>
                 </button>
 
-                <button type="button" onclick="goToScreen(1)" class="flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5">
+                <button type="button" onclick="goToScreen(1)" class="btn-shine-sweep flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5">
                   <span>Get My Token</span>
                   <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
                 </button>
@@ -975,7 +1218,7 @@
             </div>
 
             <!-- Bottom Floating Pill with Hospital Image -->
-            <div class="mt-4 bg-white rounded-2xl p-3.5 shadow-md border border-slate-200 flex items-center gap-3.5">
+            <div class="animate-float-reverse mt-4 bg-white rounded-2xl p-3.5 shadow-md border border-slate-200 flex items-center gap-3.5">
               <img class="w-10 h-10 rounded-xl object-cover border border-slate-200" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=160&auto=format&fit=crop&q=80" alt="Hospital Reception"/>
               <div class="text-xs">
                 <p class="font-bold text-slate-900">Zero Standing In Line</p>
@@ -993,26 +1236,26 @@
       <section class="bg-white border-y border-slate-200/80 py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           
-          <div class="p-3">
-            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono">8+</div>
+          <div class="p-3 reveal-item reveal-delay-1 interactive-card rounded-2xl border border-transparent hover:border-slate-200/80">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono metric-counter" data-target="8" data-suffix="+">8+</div>
             <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Super-Specialty Hospitals</p>
             <p class="text-[11px] text-slate-400 mt-0.5">AIIMS, Himalayan, Shivalik, Max</p>
           </div>
 
-          <div class="p-3">
-            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono">50+</div>
+          <div class="p-3 reveal-item reveal-delay-2 interactive-card rounded-2xl border border-transparent hover:border-slate-200/80">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-950 font-mono metric-counter" data-target="50" data-suffix="+">50+</div>
             <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Verified Specialists</p>
             <p class="text-[11px] text-slate-400 mt-0.5">Cardiology, Ortho, Neuro, Medicine</p>
           </div>
 
-          <div class="p-3">
-            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-emerald-600 font-mono">&lt; 12 Mins</div>
+          <div class="p-3 reveal-item reveal-delay-3 interactive-card rounded-2xl border border-transparent hover:border-slate-200/80">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-emerald-600 font-mono metric-counter" data-target="12" data-prefix="< " data-suffix=" Mins">&lt; 12 Mins</div>
             <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Average Wait Time</p>
             <p class="text-[11px] text-slate-400 mt-0.5">vs 95 mins industry average</p>
           </div>
 
-          <div class="p-3">
-            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-600 font-mono">100% Free</div>
+          <div class="p-3 reveal-item reveal-delay-4 interactive-card rounded-2xl border border-transparent hover:border-slate-200/80">
+            <div class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-blue-600 font-mono metric-counter" data-target="100" data-suffix="% Free">100% Free</div>
             <p class="text-xs sm:text-sm font-semibold text-slate-700 mt-1">Digital Tokens & Alerts</p>
             <p class="text-[11px] text-slate-400 mt-0.5">Instant Email & Ticket Receipt</p>
           </div>
@@ -1023,7 +1266,7 @@
       <!-- HOW IT WORKS SECTION -->
       <section id="how-it-works" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
         
-        <div class="text-center max-w-2xl mx-auto mb-14">
+        <div class="text-center max-w-2xl mx-auto mb-14 reveal-item">
           <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
             Simple 3-Step Process
           </span>
@@ -1035,12 +1278,12 @@
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative process-line-wrap">
           
           <!-- Step 1 -->
-          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group reveal-item reveal-delay-1 interactive-card">
             <div>
-              <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-blue-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 1
               </div>
               <h3 class="text-lg font-bold text-slate-950 mb-2">Patient Intake & AI Matching</h3>
@@ -1050,14 +1293,14 @@
             </div>
             <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-blue-700">
               <span>Bilingual AI Triage Support</span>
-              <span>→</span>
+              <span class="transition-transform group-hover:translate-x-1">→</span>
             </div>
           </div>
 
           <!-- Step 2 -->
-          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group reveal-item reveal-delay-2 interactive-card">
             <div>
-              <div class="w-12 h-12 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-slate-950/20 group-hover:scale-105 transition-transform">
+              <div class="w-12 h-12 rounded-2xl bg-slate-950 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-slate-950/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 2
               </div>
               <h3 class="text-lg font-bold text-slate-950 mb-2">Select Hospital & Time Slot</h3>
@@ -1067,14 +1310,14 @@
             </div>
             <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-slate-800">
               <span>Live Doctor Availability</span>
-              <span>→</span>
+              <span class="transition-transform group-hover:translate-x-1">→</span>
             </div>
           </div>
 
           <!-- Step 3 -->
-          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200/90 shadow-sm hover:shadow-md transition-all relative flex flex-col justify-between group reveal-item reveal-delay-3 interactive-card">
             <div>
-              <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-emerald-500/20 group-hover:scale-105 transition-transform">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg mb-5 shadow-md shadow-emerald-500/20 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
                 3
               </div>
               <h3 class="text-lg font-bold text-slate-950 mb-2">Get Digital Token & Auto Alerts</h3>
@@ -1084,17 +1327,17 @@
             </div>
             <div class="mt-6 pt-4 border-t border-slate-100 flex items-center gap-2 text-xs font-semibold text-emerald-700">
               <span>Live Phone Tracking Active</span>
-              <span>→</span>
+              <span class="transition-transform group-hover:translate-x-1">→</span>
             </div>
           </div>
 
         </div>
 
         <!-- How It Works Action -->
-        <div class="mt-12 text-center">
-          <button type="button" onclick="goToScreen(1)" class="px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2">
+        <div class="mt-12 text-center reveal-item reveal-delay-2">
+          <button type="button" onclick="goToScreen(1)" class="btn-shine-sweep px-6 py-3.5 rounded-xl text-sm font-bold text-white bg-slate-950 hover:bg-slate-800 shadow-md hover:shadow-lg transition-all inline-flex items-center gap-2 group">
             <span>Start Booking in 60 Seconds</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
 
@@ -1104,7 +1347,7 @@
       <section id="features-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1400px] mx-auto">
           
-          <div class="text-center max-w-2xl mx-auto mb-14">
+          <div class="text-center max-w-2xl mx-auto mb-14 reveal-item">
             <span class="text-xs font-bold tracking-wider uppercase text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
               Everything You Need
             </span>
@@ -1119,7 +1362,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
             
             <!-- Feature 1 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-1 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center text-xl mb-4">
                 ⏱️
               </div>
@@ -1130,7 +1373,7 @@
             </div>
 
             <!-- Feature 2 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-2 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center text-xl mb-4">
                 🤖
               </div>
@@ -1141,7 +1384,7 @@
             </div>
 
             <!-- Feature 3 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-3 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-xl mb-4">
                 🖨️
               </div>
@@ -1152,7 +1395,7 @@
             </div>
 
             <!-- Feature 4 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-4 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-xl mb-4">
                 📧
               </div>
@@ -1163,7 +1406,7 @@
             </div>
 
             <!-- Feature 5 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-5 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-sky-50 border border-sky-200 text-sky-600 flex items-center justify-center text-xl mb-4">
                 🏥
               </div>
@@ -1174,7 +1417,7 @@
             </div>
 
             <!-- Feature 6 -->
-            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all">
+            <div class="bg-white rounded-3xl p-6 sm:p-7 border border-slate-200 shadow-2xs hover:shadow-md transition-all reveal-item reveal-delay-6 interactive-card">
               <div class="w-12 h-12 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 flex items-center justify-center text-xl mb-4">
                 🚨
               </div>
@@ -1192,7 +1435,7 @@
       <!-- PARTNER HOSPITALS SHOWCASE -->
       <section id="hospitals-section" class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
         
-        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 reveal-item">
           <div>
             <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
               Premier Healthcare Network
@@ -1204,19 +1447,19 @@
               Direct digital OPD queue access to verified government and private medical institutions.
             </p>
           </div>
-          <button type="button" onclick="goToScreen(1)" class="text-xs sm:text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1.5 self-start md:self-auto">
+          <button type="button" onclick="goToScreen(1)" class="text-xs sm:text-sm font-bold text-blue-700 hover:text-blue-800 flex items-center gap-1.5 self-start md:self-auto group">
             <span>View All 8 Hospitals</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           
           <!-- Hospital 1 -->
-          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group reveal-item reveal-delay-1 interactive-card">
             <div>
               <div class="h-44 w-full relative overflow-hidden bg-slate-100">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&auto=format&fit=crop&q=80" alt="AIIMS Rishikesh"/>
+                <img class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" src="https://images.unsplash.com/photo-1586773860418-d37222d8fce3?w=600&auto=format&fit=crop&q=80" alt="AIIMS Rishikesh"/>
                 <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 shadow-xs">
                   Government Super-Specialty
                 </span>
@@ -1236,17 +1479,17 @@
               </div>
             </div>
             <div class="p-5 pt-0">
-              <button type="button" onclick="bookWithHospital(1)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+              <button type="button" onclick="bookWithHospital(1)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                 Book at AIIMS Rishikesh
               </button>
             </div>
           </div>
 
           <!-- Hospital 2 -->
-          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group reveal-item reveal-delay-2 interactive-card">
             <div>
               <div class="h-44 w-full relative overflow-hidden bg-slate-100">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80" alt="Himalayan Institute"/>
+                <img class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=600&auto=format&fit=crop&q=80" alt="Himalayan Institute"/>
                 <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-blue-100 text-blue-800 border border-blue-300 shadow-xs">
                   Multi-Specialty
                 </span>
@@ -1266,17 +1509,17 @@
               </div>
             </div>
             <div class="p-5 pt-0">
-              <button type="button" onclick="bookWithHospital(3)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+              <button type="button" onclick="bookWithHospital(3)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                 Book at Himalayan
               </button>
             </div>
           </div>
 
           <!-- Hospital 3 -->
-          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group reveal-item reveal-delay-3 interactive-card">
             <div>
               <div class="h-44 w-full relative overflow-hidden bg-slate-100">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&auto=format&fit=crop&q=80" alt="Shivalik Hospital"/>
+                <img class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" src="https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=600&auto=format&fit=crop&q=80" alt="Shivalik Hospital"/>
                 <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-xs">
                   Private Hospital
                 </span>
@@ -1296,17 +1539,17 @@
               </div>
             </div>
             <div class="p-5 pt-0">
-              <button type="button" onclick="bookWithHospital(2)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+              <button type="button" onclick="bookWithHospital(2)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                 Book at Shivalik
               </button>
             </div>
           </div>
 
           <!-- Hospital 4 -->
-          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group">
+          <div class="bg-white rounded-3xl overflow-hidden border border-slate-200 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group reveal-item reveal-delay-4 interactive-card">
             <div>
               <div class="h-44 w-full relative overflow-hidden bg-slate-100">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80" alt="Max Super Specialty"/>
+                <img class="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500" src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80" alt="Max Super Specialty"/>
                 <span class="absolute top-3 left-3 text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-lg bg-purple-100 text-purple-800 border border-purple-300 shadow-xs">
                   Super Specialty
                 </span>
@@ -1326,7 +1569,7 @@
               </div>
             </div>
             <div class="p-5 pt-0">
-              <button type="button" onclick="bookWithHospital(4)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+              <button type="button" onclick="bookWithHospital(4)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                 Book at Max Hospital
               </button>
             </div>
@@ -1340,7 +1583,7 @@
       <section id="doctors-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[1400px] mx-auto">
           
-          <div class="text-center max-w-2xl mx-auto mb-14">
+          <div class="text-center max-w-2xl mx-auto mb-14 reveal-item">
             <span class="text-xs font-bold tracking-wider uppercase text-blue-700 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
               Verified Doctors
             </span>
@@ -1355,9 +1598,9 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             
             <!-- Doctor 1 -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between reveal-item reveal-delay-1 interactive-card">
               <div>
-                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=240&auto=format&fit=crop&q=80" alt="Dr. Priya Sharma"/>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4 transition-transform hover:scale-105 duration-300" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=240&auto=format&fit=crop&q=80" alt="Dr. Priya Sharma"/>
                 <h3 class="font-bold text-base text-slate-950">Dr. Priya Sharma</h3>
                 <span class="inline-block text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200 mt-1">General Physician</span>
                 <p class="text-xs text-slate-500 mt-2">12 yrs exp • AIIMS Rishikesh</p>
@@ -1366,16 +1609,16 @@
                 </div>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100">
-                <button type="button" onclick="bookWithDoctor(1)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                <button type="button" onclick="bookWithDoctor(1)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                   Consult Dr. Priya
                 </button>
               </div>
             </div>
 
             <!-- Doctor 2 -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between reveal-item reveal-delay-2 interactive-card">
               <div>
-                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=240&auto=format&fit=crop&q=80" alt="Dr. Rohan Mehta"/>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4 transition-transform hover:scale-105 duration-300" src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=240&auto=format&fit=crop&q=80" alt="Dr. Rohan Mehta"/>
                 <h3 class="font-bold text-base text-slate-950">Dr. Rohan Mehta</h3>
                 <span class="inline-block text-xs font-semibold text-rose-700 bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-200 mt-1">Cardiologist</span>
                 <p class="text-xs text-slate-500 mt-2">15 yrs exp • Himalayan Inst.</p>
@@ -1384,16 +1627,16 @@
                 </div>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100">
-                <button type="button" onclick="bookWithDoctor(3)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                <button type="button" onclick="bookWithDoctor(3)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                   Consult Dr. Rohan
                 </button>
               </div>
             </div>
 
             <!-- Doctor 3 -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between reveal-item reveal-delay-3 interactive-card">
               <div>
-                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=240&auto=format&fit=crop&q=80" alt="Dr. Anita Gupta"/>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4 transition-transform hover:scale-105 duration-300" src="https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=240&auto=format&fit=crop&q=80" alt="Dr. Anita Gupta"/>
                 <h3 class="font-bold text-base text-slate-950">Dr. Anita Gupta</h3>
                 <span class="inline-block text-xs font-semibold text-purple-700 bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200 mt-1">Dermatologist</span>
                 <p class="text-xs text-slate-500 mt-2">9 yrs exp • Shivalik Hospital</p>
@@ -1402,16 +1645,16 @@
                 </div>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100">
-                <button type="button" onclick="bookWithDoctor(4)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                <button type="button" onclick="bookWithDoctor(4)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                   Consult Dr. Anita
                 </button>
               </div>
             </div>
 
             <!-- Doctor 4 -->
-            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between">
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-2xs hover:shadow-md transition-all text-center flex flex-col justify-between reveal-item reveal-delay-4 interactive-card">
               <div>
-                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4" src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=240&auto=format&fit=crop&q=80" alt="Dr. Suresh Verma"/>
+                <img class="w-24 h-24 rounded-full mx-auto object-cover border-4 border-slate-100 shadow-sm mb-4 transition-transform hover:scale-105 duration-300" src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=240&auto=format&fit=crop&q=80" alt="Dr. Suresh Verma"/>
                 <h3 class="font-bold text-base text-slate-950">Dr. Suresh Verma</h3>
                 <span class="inline-block text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 mt-1">Orthopedic</span>
                 <p class="text-xs text-slate-500 mt-2">18 yrs exp • Max Hospital</p>
@@ -1420,7 +1663,7 @@
                 </div>
               </div>
               <div class="mt-5 pt-4 border-t border-slate-100">
-                <button type="button" onclick="bookWithDoctor(5)" class="w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
+                <button type="button" onclick="bookWithDoctor(5)" class="btn-shine-sweep w-full py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold transition-colors">
                   Consult Dr. Suresh
                 </button>
               </div>
@@ -1433,7 +1676,7 @@
 
       <!-- TESTIMONIALS SECTION -->
       <section class="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
-        <div class="text-center max-w-2xl mx-auto mb-14">
+        <div class="text-center max-w-2xl mx-auto mb-14 reveal-item">
           <span class="text-xs font-bold tracking-wider uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
             Real Patient Experiences
           </span>
@@ -1444,7 +1687,7 @@
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           
-          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs reveal-item reveal-delay-1 interactive-card">
             <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
             <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
               "Earlier at AIIMS Rishikesh, I used to wait 2.5 hours in the OPD hall with my elderly father. With SmartQueue, we waited comfortably in our car and walked in right when token #SQ-1042 was called. Remarkable system!"
@@ -1458,7 +1701,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs reveal-item reveal-delay-2 interactive-card">
             <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
             <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
               "The AI chatbot in Hindi helped me realize I needed an Orthopedic rather than a general doctor for my knee pain. Got an instant token and the thermal ticket was printed immediately on my phone."
@@ -1472,7 +1715,7 @@
             </div>
           </div>
 
-          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs">
+          <div class="bg-white rounded-3xl p-7 border border-slate-200 shadow-2xs reveal-item reveal-delay-3 interactive-card">
             <div class="flex items-center text-amber-400 mb-4">★★★★★</div>
             <p class="text-xs sm:text-sm text-slate-700 leading-relaxed italic mb-6">
               "The automated email confirmation arrived within 5 seconds. My doctor already had my symptoms sheet ready when I stepped inside. Zero hassle, zero confusion."
@@ -1493,7 +1736,7 @@
       <section id="faq-section" class="py-16 sm:py-24 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
         <div class="max-w-[900px] mx-auto">
           
-          <div class="text-center mb-12">
+          <div class="text-center mb-12 reveal-item">
             <span class="text-xs font-bold tracking-wider uppercase text-slate-600 bg-white px-3 py-1 rounded-full border border-slate-200 shadow-2xs">
               Got Questions?
             </span>
@@ -1504,50 +1747,50 @@
 
           <div class="space-y-4">
             
-            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs" open>
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs reveal-item reveal-delay-1 interactive-card" open>
               <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
                 <span>Is SmartQueue free to use for patients?</span>
-                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform duration-200">▼</span>
               </summary>
               <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 Yes! Generating a digital queue token, tracking live OPD progress, and receiving email confirmations is 100% free for all patients. Standard hospital consultation charges apply at hospital billing counters as usual.
               </p>
             </details>
 
-            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs reveal-item reveal-delay-2 interactive-card">
               <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
                 <span>How will I know when it is my turn?</span>
-                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform duration-200">▼</span>
               </summary>
               <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 You can monitor your live queue token in real-time on our web tracker. We recommend arriving 10-15 minutes before your estimated time slot.
               </p>
             </details>
 
-            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs reveal-item reveal-delay-3 interactive-card">
               <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
                 <span>Can I print a physical ticket receipt?</span>
-                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform duration-200">▼</span>
               </summary>
               <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 Yes. On the confirmation screen, SmartQueue includes a realistic thermal receipt printer simulator that you can print, save as PDF, or display on your mobile screen for hospital receptionist scanning.
               </p>
             </details>
 
-            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs reveal-item reveal-delay-4 interactive-card">
               <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
                 <span>What should I do in a severe medical emergency?</span>
-                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform duration-200">▼</span>
               </summary>
               <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 If you or a patient experience acute chest pain, breathlessness, heavy bleeding, or loss of consciousness, do NOT wait for an OPD queue token. Immediately dial <strong>108 / 112</strong> or proceed directly to the nearest hospital Emergency Room.
               </p>
             </details>
 
-            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs">
+            <details class="group bg-white rounded-2xl p-5 border border-slate-200 cursor-pointer shadow-2xs reveal-item reveal-delay-5 interactive-card">
               <summary class="font-bold text-sm sm:text-base text-slate-900 flex items-center justify-between list-none">
                 <span>How can I reach customer support?</span>
-                <span class="text-slate-400 group-open:rotate-180 transition-transform">▼</span>
+                <span class="text-slate-400 group-open:rotate-180 transition-transform duration-200">▼</span>
               </summary>
               <p class="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
                 For any assistance with appointments, tokens, hospital timings, or technical queries, contact our 24/7 customer support team at <a href="mailto:smartqueue70@gmail.com" class="text-blue-600 font-bold underline hover:text-blue-800">smartqueue70@gmail.com</a>.
@@ -1561,12 +1804,12 @@
 
       <!-- BOTTOM CONVERSION CTA BANNER -->
       <section class="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 max-w-[1400px] mx-auto">
-        <div class="rounded-3xl bg-slate-950 text-white p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl border border-slate-800">
+        <div class="reveal-item rounded-3xl bg-slate-950 text-white p-8 sm:p-14 text-center relative overflow-hidden shadow-2xl border border-slate-800 interactive-card">
           
           <div class="absolute inset-0 bg-radial from-blue-900/40 via-transparent to-transparent opacity-60 pointer-events-none"></div>
 
           <div class="relative z-10 max-w-2xl mx-auto">
-            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3.5 py-1.5 rounded-full inline-block mb-4">
+            <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/80 px-3.5 py-1.5 rounded-full inline-block mb-4 glow-badge-pulse">
               Get Started In 60 Seconds
             </span>
             <h2 class="text-3xl sm:text-5xl font-extrabold tracking-tight mb-4">
@@ -1576,11 +1819,14 @@
               Join thousands of patients who enjoy smooth, digitized hospital visits with zero stress.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button type="button" onclick="goToScreen(1)" class="w-full sm:w-auto px-8 py-4 rounded-xl text-sm sm:text-base font-bold text-slate-950 bg-white hover:bg-slate-100 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
+              <button type="button" onclick="goToScreen(1)" class="btn-shine-sweep w-full sm:w-auto px-8 py-4 rounded-xl text-sm sm:text-base font-bold text-slate-950 bg-white hover:bg-slate-100 shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2 group">
                 <span>Book Appointment Now</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
               </button>
-              <button type="button" onclick="toggleMediChat()" class="w-full sm:w-auto px-6 py-4 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors flex items-center justify-center gap-2">
+              <button type="button" onclick="toggleMediChat()" class="w-full sm:w-auto px-6 py-4 rounded-xl text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-colors flex items-center justify-center gap-2 group">
+                <span class="flex items-center justify-center w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 transition-transform group-hover:scale-110">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </span>
                 <span>Talk to AI Assistant</span>
               </button>
             </div>
@@ -2338,8 +2584,10 @@
       const el = document.getElementById('simCurrentTokenNum');
       if (el) {
         el.textContent = '#SQ-' + simCurrentToken;
-        el.classList.add('scale-110', 'text-emerald-300');
-        setTimeout(() => el.classList.remove('scale-110', 'text-emerald-300'), 350);
+        el.classList.remove('token-pop-active');
+        // Force reflow so the animation restarts smoothly
+        void el.offsetWidth;
+        el.classList.add('token-pop-active');
       }
       const next1 = document.getElementById('simNextTokenNum');
       if (next1) next1.textContent = '#SQ-' + (simCurrentToken + 1);
@@ -3359,6 +3607,90 @@ Be concise, warm and helpful. Support Hindi or English.`;
       if (pwaHeaderBtn) pwaHeaderBtn.classList.add('hidden');
       if (pwaMobileBtn) pwaMobileBtn.classList.add('hidden');
     });
+
+    // ==========================================
+    // HIGH-END LANDING PAGE INTERACTION & SCROLL REVEALS
+    // ==========================================
+    (function initLandingAnimations() {
+      // 1. Intersection Observer for Scroll Reveals
+      const revealItems = document.querySelectorAll('.reveal-item');
+      if ('IntersectionObserver' in window && revealItems.length > 0) {
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('is-revealed');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -40px 0px'
+        });
+
+        revealItems.forEach(item => revealObserver.observe(item));
+      } else {
+        // Fallback: reveal all immediately if IntersectionObserver is unavailable
+        revealItems.forEach(item => item.classList.add('is-revealed'));
+      }
+
+      // 2. Metrics Counter Animation
+      let metricsCounted = false;
+      const counterElements = document.querySelectorAll('.metric-counter');
+      function animateCounters() {
+        if (metricsCounted) return;
+        metricsCounted = true;
+
+        counterElements.forEach(counter => {
+          const target = parseInt(counter.getAttribute('data-target'), 10);
+          if (isNaN(target)) return;
+          const prefix = counter.getAttribute('data-prefix') || '';
+          const suffix = counter.getAttribute('data-suffix') || '';
+          const duration = 1400; // ms
+          const startTime = performance.now();
+
+          function updateCounter(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const currentVal = Math.floor(easeOut * target);
+            counter.textContent = `${prefix}${currentVal}${suffix}`;
+
+            if (progress < 1) {
+              requestAnimationFrame(updateCounter);
+            } else {
+              counter.textContent = `${prefix}${target}${suffix}`;
+            }
+          }
+          requestAnimationFrame(updateCounter);
+        });
+      }
+
+      if ('IntersectionObserver' in window && counterElements.length > 0) {
+        const metricsObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              animateCounters();
+              metricsObserver.disconnect();
+            }
+          });
+        }, { threshold: 0.2 });
+
+        const firstCounter = counterElements[0].closest('section');
+        if (firstCounter) metricsObserver.observe(firstCounter);
+      } else {
+        animateCounters();
+      }
+
+      // 3. Periodic Sheen Sweep on Hero CTA
+      const heroPrimaryBtn = document.querySelector('.hero-anim-cta .btn-shine-sweep');
+      if (heroPrimaryBtn) {
+        setInterval(() => {
+          heroPrimaryBtn.classList.add('auto-shine');
+          setTimeout(() => heroPrimaryBtn.classList.remove('auto-shine'), 1200);
+        }, 5000);
+      }
+    })();
   </script>
 </body>
 </html>
