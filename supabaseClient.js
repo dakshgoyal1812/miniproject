@@ -9,12 +9,11 @@
   'use strict';
 
   // 1. Supabase Project Credentials
-  // Replace SUPABASE_URL with your actual project URL from your Supabase Dashboard:
-  // Dashboard -> Project Settings -> API -> Project URL (e.g., https://xyzcompany.supabase.co)
+  // Reads from window.NEXT_PUBLIC_SUPABASE_* (configured via .env) or falls back to project defaults
   const DEFAULT_SUPABASE_URL = "https://mtcjvblcwdntyqjaedzz.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_mOQWxXYa2T3XcA07g6orbw_ofxr_M88";
+  const DEFAULT_SUPABASE_PUBLISHABLE_KEY = "sb_publishable_mOQWxXYa2T3XcA07g6orbw_ofxr_M88";
 
-  // Allow dynamic override from localStorage or window if updated via UI
+  // Allow dynamic override from window, localStorage, or defaults
   function getSupabaseUrl() {
     try {
       const stored = localStorage.getItem('smartqueue_supabase_url');
@@ -22,7 +21,11 @@
         return stored.trim();
       }
     } catch (e) {}
-    return window.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+    return window.NEXT_PUBLIC_SUPABASE_URL || window.SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  }
+
+  function getSupabasePublishableKey() {
+    return window.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || DEFAULT_SUPABASE_PUBLISHABLE_KEY;
   }
 
   function setSupabaseUrl(url) {
@@ -40,8 +43,9 @@
       return null;
     }
     const currentUrl = getSupabaseUrl();
+    const currentKey = getSupabasePublishableKey();
     try {
-      clientInstance = supabase.createClient(currentUrl, SUPABASE_PUBLISHABLE_KEY, {
+      clientInstance = supabase.createClient(currentUrl, currentKey, {
         auth: {
           persistSession: true,
           autoRefreshToken: true,
@@ -129,8 +133,13 @@
     },
     initClient,
     getSupabaseUrl,
+    getSupabasePublishableKey,
     setSupabaseUrl,
-    SUPABASE_PUBLISHABLE_KEY,
+    DEFAULT_SUPABASE_URL,
+    DEFAULT_SUPABASE_PUBLISHABLE_KEY,
+    get SUPABASE_PUBLISHABLE_KEY() {
+      return getSupabasePublishableKey();
+    },
     signInWithGoogle,
     signOut,
     getSession
