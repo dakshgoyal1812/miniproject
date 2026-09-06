@@ -601,15 +601,6 @@ async function handler(req, res) {
     return handleSendConfirmationRequest(req, res);
   }
 
-  // 4. Supabase Public Config Endpoint
-  if (pathname === '/api/config' || pathname === '/api/auth-config') {
-    return sendResponse(res, 200, {
-      success: true,
-      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mtcjvblcwdntyqjaedzz.supabase.co',
-      supabasePublishableKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_mOQWxXYa2T3XcA07g6orbw_ofxr_M88'
-    });
-  }
-
   // 4. Static Files
   let safePath = path.normalize(decodeURIComponent(pathname)).replace(/^(\.\.[\/\\])+/, '');
   if (safePath === '/' || safePath === '\\' || safePath === '') {

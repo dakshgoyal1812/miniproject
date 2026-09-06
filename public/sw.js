@@ -1,9 +1,7 @@
-const CACHE_NAME = 'smartqueue-v1.0.2';
+const CACHE_NAME = 'smartqueue-v1.0.3';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/login.html',
-  '/supabaseClient.js',
   '/404.html',
   '/manifest.json',
   '/icons/icon-192.png',
